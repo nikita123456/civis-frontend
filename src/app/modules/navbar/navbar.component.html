@@ -12,8 +12,12 @@
         <p data-event="click-navbar-leaderboard" class="nav-link-text bold-text" [routerLink]="['/leader-board']">
           {{'Leaderboard' | translate}}</p>
         <p class="nav-link-text" [routerLink]="['/how-civis-works']">{{'How Civis Works' | translate}}</p>
+<<<<<<< HEAD
         <p class="nav-link-text" [routerLink]="['/donate']">{{'Donate' | translate}}</p>
 
+=======
+        <p class="nav-link-text" [routerLink]="['/glossary']">{{'Glossary' | translate}}</p>
+>>>>>>> remotes/origin/feature/profanity_glossary
       </div>
     </div>
 
@@ -138,6 +142,9 @@
           <div class="nav-btn">
             <button class="close-btn btn btn-transparent" [routerLink]="['/how-civis-works']" (click)="closeMenu()">
               {{'How Civis Works' | translate}}
+            </button>
+            <button class="close-btn btn btn-transparent" [routerLink]="['/glossary']" (click)="closeMenu()">
+              {{'Glossary' | translate}}
             </button>
           </div>
           <div class="nav-btn">

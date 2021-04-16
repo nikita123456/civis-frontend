@@ -47,6 +47,10 @@ const routes: Routes = [
     loadChildren: () => import('./modules/how-civis-works/how-civis-works.module').then(m => m.HowCivisWorksModule)
   },
   {
+    path: 'glossary',
+    loadChildren: () => import('./modules/glossary/glossary.module').then(m => m.GlossaryModule)
+  },
+  {
     path: 'about-us',
     loadChildren: () => import('./modules/about-us/about-us.module').then(m => m.AboutUsModule)
   },

@@ -2,6 +2,7 @@
   <div class="paper-effect">
     <p class="heading">
       {{'Summary' | translate}}
+        <button mat-button (click)="openDialog()" style="float: right;">Open Glossary</button>
       <span>{{profileData?.readingTime ? '(' + profileData?.readingTime + ' min)' : '' }}</span>
     </p>
     <div *ngIf="profileData?.page || profileData?.summaryHindi">

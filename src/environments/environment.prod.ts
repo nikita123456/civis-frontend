@@ -5,7 +5,7 @@ export const environment = {
   development: false,
   staging: false,
   production: true,
-  api: 'https://api.civis.vote',
+  api: 'localhost:3000',
   RECAPTCHA_SITE_KEY: '6Ld8GLUUAAAAAH5CZbqDdQDwl-s5ZC2ZqHz5TWyj'
 };
 
