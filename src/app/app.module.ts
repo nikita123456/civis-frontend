@@ -19,6 +19,7 @@ import { UnsubscribeUserGuard } from './shared/guards/unsubscribe-user.guard';
 import { CookieModule, CookieService } from 'ngx-cookie';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { StarterService } from './shared/services/starter.service';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { StarterService } from './shared/services/starter.service';
     CitySelectionModalModule,
     CookieModule.forRoot(),
     NgxWebstorageModule.forRoot(),
+    MatDialogModule
   ],
   providers: [
     LandingGuard,

@@ -1,0 +1,28 @@
+<!-- <mat-dialog-content class="mat-typography"> -->
+    <div class="bg-color-wrapper">
+    <p class="list-heading"> {{GlossaryListData?.paging?.totalItems}} {{'Glossary Index' | translate}}</p>
+      <div class="glossary-table">
+        <table>
+          <tr>
+            <th>
+              Word
+            </th>
+            <th>
+              Description
+            </th>
+          </tr>
+          <tr *ngFor="let item of glossaryListArray">
+            <td>
+              {{item?.word}}
+            </td>
+            <td>
+              {{item?.description}}
+            </td>
+          </tr>
+        </table>
+      </div>
+   
+  </div>
+  <!-- <app-footer></app-footer> -->
+  
+<!-- </mat-dialog-content> -->
