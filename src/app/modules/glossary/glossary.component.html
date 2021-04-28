@@ -1,17 +1,15 @@
-<!-- <mat-dialog-content class="mat-typography"> -->
-    <div class="bg-color-wrapper">
-    <p class="list-heading"> {{GlossaryListData?.paging?.totalItems}} {{'Glossary Index' | translate}}</p>
-      <div class="glossary-table">
+
+<div class="glossary-wrapper">
+  <div class="glossary-wrapper__inner-container">
+    <section class="container-body">
+      
+      
         <table>
-          <tr>
-            <th>
-              Word
-            </th>
-            <th>
-              Description
-            </th>
-          </tr>
-          <tr *ngFor="let item of glossaryListArray">
+          <!-- <div > -->
+          <tr class="container-body__data-row pointer" *ngFor="let item of glossaryListArray; let i = index">
+            <td>
+              {{i +1}}
+            </td>
             <td>
               {{item?.word}}
             </td>
@@ -19,10 +17,17 @@
               {{item?.description}}
             </td>
           </tr>
+        <!-- </div> -->
+
         </table>
-      </div>
-   
+        <!-- <div class="row-left-item">
+          <p class="row-num">{{i + 1}}</p> 
+          <p class="word">{{item?.word}}</p>
+        </div>
+        <div class="row-right-item mb-0">
+          <p class="description ">{{item?.description}}</p>
+        </div> -->
+    </section>
   </div>
-  <!-- <app-footer></app-footer> -->
-  
-<!-- </mat-dialog-content> -->
+</div>
+<app-footer></app-footer>

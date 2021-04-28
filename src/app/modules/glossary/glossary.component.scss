@@ -1,202 +1,132 @@
 @import './src/assets/styles/app';
 
-.bg-color-wrapper {
-  background-color: $blue-bg-light;
-  margin-top: 77px;
-  
-  @media screen and (max-width: 991px) {
-    margin-top: 57px;
-  }
-}
+.glossary-wrapper {
+  width: 100%;
+  // margin-top: 77px;
+  background-color: #E5F4FF;
+  min-height: 100vh;
 
-.consultation-listing-container {
-  width: 90%;
-  margin: 0 auto;
-  padding-top: 46px;
-  @media screen and (max-width: 991px) {
-    width: 100%;
-  }
-  .card-listing-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 15px 20px;
-    width: 100%;
+  &__inner-container {
+    // width: 80%;
+    margin: 0 auto;
+    padding: 34px 0 20px;
     @media screen and (max-width: 991px) {
-      grid-template-columns: auto;
-    }
-    .card-item {
-      max-width: 445px;
-      @media screen and (max-width: 991px) {
-        max-width: 100%;
-      }
-    }
-  }
-}
-
-.glossary-table {
-  width: 90%;
-  margin-left: 20px;
-
-}
-table{
-  th{
-    text-align: center;
-    border: 1px solid black;
-    height: 50px;
-  }
-  th:nth-child(1){
-    width: 20%;
-  }
-  th:nth-child(2){
-    width: 80%;
-  }
-  td{
-    // width: 200px;
-    text-align: center;
-    padding: 15px;
-    border: 1px solid black;
-  }
-}
-
-.closed-list-container {
-  width: 90%;
-  margin: 0 auto;
-  padding-top: 80px;
-  @media screen and (max-width: 991px) {
-    width: 100%;
-    padding-top: 25px;
-  }
-  .closed-list-table {
-
-    .table-header {
-      display: flex;
       width: 100%;
-      border-bottom: 1px solid #A8DCFF;
-      padding-bottom: 5px;
-      @media screen and (max-width: 991px) {
-        display: none;
-      }
-      .header-title {
-        font-size: 12px;
-        color: #6DB4E4;
-        font-weight: 500;
-      }
     }
-
-    .table-body {
+    
+    .container-header {
       display: flex;
       align-items: center;
-      width: 100%;
-      padding: 10px 0;
-      box-shadow: inset 90px 0 0 0 #e5f4ff, inset 0 -1px 0 0 #C0E6FF;
+      justify-content: space-between;
+      padding-bottom: 28px;
+      border-bottom: 3px solid #BFE4FF;
       @media screen and (max-width: 991px) {
-        display: none;
+       flex-wrap: wrap;
+       padding: 0 20px 20px;
+       border-bottom: 2px solid #BFE4FF;
       }
-    }
-
-    .table-list {
-      display: none;
-      padding: 20px 15px;
-      border-bottom: 1px solid #BFE4FF;
-      @media screen and (max-width: 991px) {
-        display: block;
-      }
-      .list-grid {
-        display: grid;
-        grid-template-columns: 50px 1fr;
-        grid-column-gap: 10px;
-      }
-    }
-
-    .cell-1 {
-      width: 40%;
-    }
-    .cell-2 {
-      width: 15%;
-    }
-    .cell-3 {
-      width: 15%;
-    }
-    .cell-4 {
-      width: 30%;
-    }
-
-    .consultation-cell {
-      display: grid;
-      grid-template-columns: 70px 1fr;
-      align-items: center;
-      grid-column-gap: 20px;
-    }
-
-    .c-profile-data {
-      width: 80%;
-      @media screen and (max-width: 991px) {
-        width: 100%;
-        margin-bottom: 10px;
-      }
-      p:nth-child(1) {
-        color: $black;
-        font-size: 16px;
-        font-weight: 600;
-        margin: 0;
-        @media screen and (max-width: 991px) {
-          font-size: 15px;
+      .header-left {
+        p:nth-child(1) {
+          font-size: 36px;
+          color: $primary-color;
+          margin: 0;
+          @media screen and (max-width: 991px) {
+            font-size: 20px;
+          }
+        }
+        p:nth-child(2) {
+          @include regular-text($color: $primary-color);
+          margin: 0;
+          @media screen and (max-width: 991px) {
+            font-size: 12px;
+          }
         }
       }
-      p:nth-child(2) {
-        color: $black;
-        font-size: 12px;
-        margin: 0;
+      .header-right {
+        min-width: 90px;
+
+        ng-select {
+          .ng-select-container {
+            background-color: #e5f4ff;
+            border: none;
+            color: $primary-color;
+            font-weight: bold;
+          }
+        }
+        .ng-select.ng-select-opened>.ng-select-container .ng-arrow {
+          border-color: transparent transparent $primary-color;
+        }
+
+        .ng-select .ng-arrow-wrapper .ng-arrow {
+          border-color: $primary-color transparent transparent;
+        }
       }
     }
 
-    .reponse-count-text {
-      font-size: 13px;
-      font-weight: 500;
-      color: $black;
-      margin: 0;
-      @media screen and (max-width: 991px) {
-        font-size: 12px;
-        color: #6DB4E4;
-        margin-bottom: 5px;
+    .container-body {
+
+      &__data-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #BFE4FF;
+        transition: all .2s linear;
+        &:hover {
+          background-color: #BFE4FF;
+          box-shadow: 0px 0px 3px #A0D4F8;
+        }
+        // @media screen and (max-width: 991px) {
+        //   display: none;
+        // }
+
+        // .row-left-item {
+        //   display: flex;
+        //   text-align: center;
+        //   .row-num {
+        //     font-size: 16px;
+        //     font-weight: 600;
+        //     color: #6DB4E4;
+        //     // margin-bottom: 0;
+        //   }
+        //   .word {
+        //     font-size: 16px;
+        //     font-weight: 600;
+        //     color: $black;
+        //     // margin-bottom: 0;
+        //   }
+        // }
+
+        // .row-right-item {
+        //   text-align: center;
+        //   display: flex;
+        //   .description{
+        //     font-size: 16px;
+        //     font-weight: 600;
+        //     color: $primary-color;
+        //   }
+        // }
+        // table{
+          td{
+            text-align: center;
+            display: flex;
+            font-size: 16px;
+            font-weight: 600;
+          }
+          td:nth-child(1){
+            width: 5%;
+            color: #6DB4E4;
+          }
+          td:nth-child(2){
+            width: 15%;
+            color: $black;
+          }
+          td:nth-child(3){
+            width: 80%;
+            color: $primary-color;
+          }
+        // }
       }
     }
-
-    .closed-date {
-      font-size: 13px;
-      color: $black;
-      margin: 0;
-      @media screen and (max-width: 991px) {
-        font-size: 12px;
-      }
-    }
-
-    .view-btn {
-      font-size: 13px;
-      background-color: #6DB4E4;
-      color: $white;
-      padding: 7px 22px;
-      &:hover {
-        background-color: darken(#6DB4E4, 5%);
-      }
-    }
-  }
-}
-
-.list-heading {
-  font-size: 36px;
-  color: $primary-color;
-  margin: 0;
-  @media screen and (max-width: 991px) {
-    font-size: 20px;
-    padding: 0 20px;
-  }
-}
-
-.list-subheading {
-  @include regular-text($color: $primary-color);
-  @media screen and (max-width: 991px) {
-    padding: 0 20px;
-    margin-bottom: 10px !important;
   }
 }

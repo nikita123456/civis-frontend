@@ -37,7 +37,7 @@ export class ReadRespondComponent implements OnInit {
   questionnaireExist: boolean;
   earnedPoints: any;
   emailVerification = false;
-
+  
   @ViewChild('emailVerificationModal', { static: false }) emailVerificationModal: ModalDirective;
 
   constructor(
@@ -49,6 +49,7 @@ export class ReadRespondComponent implements OnInit {
     private _cookieService: CookieService,
     private dialog: MatDialog
   ) {
+    import('src/app/modules/glossary/glossary.module').then(m=>m.GlossaryModule);
     this.consultationService.consultationId$
     .pipe(
       filter(i => i !== null)

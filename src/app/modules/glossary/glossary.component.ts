@@ -62,7 +62,12 @@ export class GlossaryComponent implements OnInit {
 
   fetchActiveGlossaryList() {
     // this.loadingCard = true;
-    this.glossaryListQuery = this.getQuery('published');
+    const variables = {
+      perPage: this.perPageLimit,
+      page: 1,
+    };
+     
+    this.glossaryListQuery = this.apollo.watchQuery({query: GlossaryList, variables});
     // this.loader.show();
     // this.loadingElements.consultationList = true;
     this.glossaryListQuery
@@ -89,20 +94,4 @@ export class GlossaryComponent implements OnInit {
         });
   }
 
-  getQuery(status) {
-    const variables = {
-      perPage: this.perPageLimit,
-      page: 1,
-      // statusFilter: status,
-      // featuredFilter: false,
-      // sort: 'response_deadline',
-      // sortDirection: status === 'published' ? 'asc' : 'desc',
-    };
-    return this.apollo.watchQuery({query: GlossaryList, variables});
-  }
-
-  convertDateType(date) {
-    return moment(date).format("Do MMM YY");
-  }
-  
 }
