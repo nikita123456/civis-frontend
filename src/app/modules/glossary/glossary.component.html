@@ -1,33 +1,40 @@
-
 <div class="glossary-wrapper">
+  <h2>
+    Glossary Terms
+    <button class="btn-circular blue-text bold-text" style="float: right;" mat-button (click)="closeDialog()">Close</button>
+  </h2>
   <div class="glossary-wrapper__inner-container">
     <section class="container-body">
-      
-      
-        <table>
-          <!-- <div > -->
-          <tr class="container-body__data-row pointer" *ngFor="let item of glossaryListArray; let i = index">
-            <td>
-              {{i +1}}
-            </td>
-            <td>
-              {{item?.word}}
-            </td>
-            <td>
-              {{item?.description}}
-            </td>
-          </tr>
-        <!-- </div> -->
-
+        <table >
+          <thead>
+            <tr class="container-body__data-row ">
+              <th>
+                S No.
+              </th>
+              <th>
+                Legal Terms
+              </th>
+              <th>
+              </th>
+              <th>
+                Definition
+              </th>
+            </tr>
+          </thead>
+            <tr class="container-body__data-row "*ngFor="let item of glossaryWordArray; let i = index">
+              <td>
+                {{i +1}}
+              </td>
+              <td>
+                {{item?.wordindex.word}}
+              </td>
+              <td>
+              </td>
+              <td>
+                {{item?.wordindex.description}}
+              </td>
+            </tr>
         </table>
-        <!-- <div class="row-left-item">
-          <p class="row-num">{{i + 1}}</p> 
-          <p class="word">{{item?.word}}</p>
-        </div>
-        <div class="row-right-item mb-0">
-          <p class="description ">{{item?.description}}</p>
-        </div> -->
     </section>
   </div>
 </div>
-<app-footer></app-footer>

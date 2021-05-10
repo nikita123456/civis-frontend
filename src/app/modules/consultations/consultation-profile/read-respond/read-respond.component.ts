@@ -14,7 +14,6 @@ import { isObjectEmpty } from 'src/app/shared/functions/modular.functions';
 import { ModalDirective } from 'ngx-bootstrap';
 import {MatDialog} from '@angular/material/dialog';
 import { GlossaryComponent } from 'src/app/modules/glossary/glossary.component';
-import { GlossaryModule } from 'src/app/modules/glossary/glossary.module';
 
 @Component({
   selector: 'app-read-respond',
@@ -37,7 +36,7 @@ export class ReadRespondComponent implements OnInit {
   questionnaireExist: boolean;
   earnedPoints: any;
   emailVerification = false;
-  
+
   @ViewChild('emailVerificationModal', { static: false }) emailVerificationModal: ModalDirective;
 
   constructor(
@@ -266,11 +265,8 @@ export class ReadRespondComponent implements OnInit {
   }
   openDialog() {
     const dialogRef = this.dialog.open(GlossaryComponent);
-
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result}`);
     });
   }
-
 }
-// export class DialogContentExampleDialog {}
