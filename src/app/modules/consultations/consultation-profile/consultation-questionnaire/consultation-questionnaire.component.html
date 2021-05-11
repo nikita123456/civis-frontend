@@ -42,6 +42,7 @@
                   <div class="text-area">
                     <textarea (input)="longTextAnswer = $event.target.value" placeholder="Type your answer here, please refrain from using profane words" [formControlName]="question.id" [(ngModel)]='checkprofanity' ></textarea>
                     <h1>Is profane: {{profanity_check}}</h1>
+                    <!-- profanity -->
                     <button class='btn btn-primary' (click) ='onSubmit()'>Submit</button>
                   </div>
                   <div *ngIf="showError && questionnaireForm.controls[question.id].errors" class="error-msg text-left">This is a mandatory question and your response is required</div> 

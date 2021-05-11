@@ -1,11 +1,12 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Apollo, QueryRef } from 'apollo-angular';
-import { map } from 'rxjs/operators';
-import { GlossaryList } from './glossary.graphql';
+import { filter, map } from 'rxjs/operators';
+import { GlossaryWord } from './glossary.graphql';
 import { LinearLoaderService } from '../../shared/components/linear-loader/linear-loader.service';
-import * as moment from 'moment';
 import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
 import { UserService } from 'src/app/shared/services/user.service';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import { ConsultationsService } from 'src/app/shared/services/consultations.service';
 
 @Component({
   selector: 'app-glossary',
@@ -15,37 +16,30 @@ import { UserService } from 'src/app/shared/services/user.service';
 
 export class GlossaryComponent implements OnInit {
 
-  glossaryListData: any;
-  glossaryListArray: Array<any>;
-  glossaryListPaging: any;
-  perPageLimit = 15;
-  glossaryListQuery: QueryRef<any>;
-  closedGlossaryQuery: QueryRef<any>;
-  loadingElements: any = {};
-  closedGlossaryList: Array<any>;
-  closedGlossaryPaging: any;
-  loadClosedGlossary = false;
-  // loadingCard = false;
+  glossaryWordArray: Array<any>;
+  glossaryWordQuery: QueryRef<any>;
   currentUser: any;
-  
-  // @HostListener('document:scroll', ['$event'])
-  // onScroll(event: any) {
-  //   const boundingBox = document.documentElement.getBoundingClientRect();
-  //   if ((Math.floor(+boundingBox.height) - window.scrollY) <= window.innerHeight && this.consultationListData && this.consultationListArray) {
-  //     this.loadMoreCard();
-  //   }
-  // }
-
+  consultationId: number;
   constructor(
     private apollo: Apollo, 
     private loader: LinearLoaderService, 
     private errorService: ErrorService,
-    private userService: UserService
-    ) { }
+    private userService: UserService,
+    public dialogRef: MatDialogRef<GlossaryComponent>,
+    private consultationService: ConsultationsService,
+    ) {
+      this.consultationService.consultationId$
+      .pipe(
+        filter(i=>i !== null)
+      )
+      .subscribe((consultationId:any) => {
+        this.consultationId = consultationId;
+      });
+     }
 
   ngOnInit() {
     this.checkUserSignedIn();
-    this.fetchActiveGlossaryList();
+    this.fetchCurrentGlossaryList();
   }
 
   checkUserSignedIn(){
@@ -60,49 +54,26 @@ export class GlossaryComponent implements OnInit {
     });
   }
 
-  fetchActiveGlossaryList() {
-    // this.loadingCard = true;
-    this.glossaryListQuery = this.getQuery('published');
-    // this.loader.show();
-    // this.loadingElements.consultationList = true;
-    this.glossaryListQuery
+  fetchCurrentGlossaryList() {
+    const variables = {
+     id: String(this.consultationId),
+    };
+    console.log(variables);
+    this.glossaryWordQuery = this.apollo.watchQuery({query: GlossaryWord, variables});
+    this.glossaryWordQuery
       .valueChanges 
         .pipe (
-          map((res: any) => res.data.glossaryList)
+          map((res: any) => res.data.glossaryWord)
         )
         .subscribe(item => {
-            // this.loadingCard = false;
-            // this.loadingElements.glossaryList = false;
-            this.glossaryListData = item;
-            this.glossaryListArray = item.data;
-            // this.glossaryListPaging = item.paging;
-            // if (!this.glossaryListArray.length || 
-            //   (this.glossaryListPaging.currentPage === this.glossaryListPaging.totalPages)) {
-            //     this.loadClosedConsultation = true;
-            //     // this.fetchClosedConsultationList();
-            //   }
+            this.glossaryWordArray = item;
         }, err => {
-          // this.loadingCard = false;
-            this.loadingElements.glossaryList = false;
             this.loader.hide();
             this.errorService.showErrorModal(err);
         });
   }
-
-  getQuery(status) {
-    const variables = {
-      perPage: this.perPageLimit,
-      page: 1,
-      // statusFilter: status,
-      // featuredFilter: false,
-      // sort: 'response_deadline',
-      // sortDirection: status === 'published' ? 'asc' : 'desc',
-    };
-    return this.apollo.watchQuery({query: GlossaryList, variables});
+  closeDialog():void{
+    this.dialogRef.close();
   }
 
-  convertDateType(date) {
-    return moment(date).format("Do MMM YY");
-  }
-  
 }

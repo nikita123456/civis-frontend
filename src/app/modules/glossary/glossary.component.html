@@ -1,28 +1,40 @@
-<!-- <mat-dialog-content class="mat-typography"> -->
-    <div class="bg-color-wrapper">
-    <p class="list-heading"> {{GlossaryListData?.paging?.totalItems}} {{'Glossary Index' | translate}}</p>
-      <div class="glossary-table">
-        <table>
-          <tr>
-            <th>
-              Word
-            </th>
-            <th>
-              Description
-            </th>
-          </tr>
-          <tr *ngFor="let item of glossaryListArray">
-            <td>
-              {{item?.word}}
-            </td>
-            <td>
-              {{item?.description}}
-            </td>
-          </tr>
+<div class="glossary-wrapper">
+  <h2>
+    Glossary Terms
+    <button class="btn-circular blue-text bold-text" style="float: right;" mat-button (click)="closeDialog()">Close</button>
+  </h2>
+  <div class="glossary-wrapper__inner-container">
+    <section class="container-body">
+        <table >
+          <thead>
+            <tr class="container-body__data-row ">
+              <th>
+                S No.
+              </th>
+              <th>
+                Legal Terms
+              </th>
+              <th>
+              </th>
+              <th>
+                Definition
+              </th>
+            </tr>
+          </thead>
+            <tr class="container-body__data-row "*ngFor="let item of glossaryWordArray; let i = index">
+              <td>
+                {{i +1}}
+              </td>
+              <td>
+                {{item?.wordindex.word}}
+              </td>
+              <td>
+              </td>
+              <td>
+                {{item?.wordindex.description}}
+              </td>
+            </tr>
         </table>
-      </div>
-   
+    </section>
   </div>
-  <!-- <app-footer></app-footer> -->
-  
-<!-- </mat-dialog-content> -->
+</div>

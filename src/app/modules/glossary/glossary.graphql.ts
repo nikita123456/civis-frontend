@@ -1,20 +1,10 @@
 import gql from 'graphql-tag';
-export const GlossaryList = gql`
-  query glossaryList($perPage: Int, $page: Int ) {
-    glossaryList(perPage: $perPage, page: $page, sortDirection: asc) {
-      data {
-        id
+export const GlossaryWord = gql`
+  query glossaryWord($id: String!) {
+    glossaryWord(id: $id) {
+      wordindex {
         word
         description
-        createdAt
-        createdBy {
-          firstName
-        }
-      }
-      paging {
-        currentPage
-        totalPages
-        totalItems
       }
     }
   }
