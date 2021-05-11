@@ -5,9 +5,6 @@ import { ConsultationsService } from 'src/app/shared/services/consultations.serv
 import { UserService } from 'src/app/shared/services/user.service';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie';
-import {MatDialog} from '@angular/material/dialog';
-import { GlossaryComponent } from 'src/app/modules/glossary/glossary.component';
-
 @Component({
   selector: 'app-profile-card',
   templateUrl: './profile-card.component.html',
@@ -33,12 +30,7 @@ export class ProfileCardComponent implements OnInit, OnChanges {
   constructor(private consultationsService: ConsultationsService,
               private userService: UserService,
               private cookieService: CookieService,
-              private router: Router,
-              private dialog: MatDialog
-              ) {
-                import('src/app/modules/glossary/glossary.module').then(m=>m.GlossaryModule);
-
-               }
+              private router: Router ) { }
 
   ngOnInit() {
       this.currentUrl = window.location.href;
@@ -196,13 +188,4 @@ export class ProfileCardComponent implements OnInit, OnChanges {
     });
   }
 
-  openDialog() {
-    const dialogRef = this.dialog.open(GlossaryComponent,{
-      height:'500px',
-      width:'1500px',
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
-  }
 }
