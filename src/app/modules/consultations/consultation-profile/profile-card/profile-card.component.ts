@@ -198,8 +198,8 @@ export class ProfileCardComponent implements OnInit, OnChanges {
 
   openDialog() {
     const dialogRef = this.dialog.open(GlossaryComponent,{
-      height:'500px',
-      width:'1500px',
+      height:'400px',
+      width:'600px',
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result}`);

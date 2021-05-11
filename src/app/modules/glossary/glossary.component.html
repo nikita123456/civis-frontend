@@ -1,11 +1,11 @@
 <div class="glossary-wrapper">
   <h2>
     Glossary Terms
-    <button class="btn-circular blue-text bold-text" style="float: right;" mat-button (click)="closeDialog()">Close</button>
+    <div class="modal-close-btn" style="float: right;" (click)="closeDialog()"><i class="fa fa-times"></i></div>
   </h2>
   <div class="glossary-wrapper__inner-container">
     <section class="container-body">
-        <table >
+        <table>
           <thead>
             <tr class="container-body__data-row ">
               <th>
@@ -13,8 +13,6 @@
               </th>
               <th>
                 Legal Terms
-              </th>
-              <th>
               </th>
               <th>
                 Definition
@@ -27,8 +25,6 @@
               </td>
               <td>
                 {{item?.wordindex.word}}
-              </td>
-              <td>
               </td>
               <td>
                 {{item?.wordindex.description}}

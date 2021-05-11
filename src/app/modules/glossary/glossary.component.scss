@@ -1,10 +1,11 @@
 @import './src/assets/styles/app';
 
 .glossary-wrapper {
-  background-color: #E5F4FF;
+  background-color: #FFFFFF;
 
   &__inner-container {
     margin: 0 auto;
+    background-color: #E5F4FF;
     @media screen and (max-width: 991px) {
     }
     .container-body {
@@ -30,13 +31,10 @@
             width: 50px;
           }
           th:nth-child(2){
-            width: 210;
+            width: 100px;
           }
           th:nth-child(3){
-            width: 50px;
-          }
-          th:nth-child(4){
-            width: 1192px;
+            width: 372px;
           }
           
           td{
@@ -51,15 +49,12 @@
           }
           td:nth-child(2){
             text-align: left;
-            width: 210;
+            width: 100px;
             color: $black;
             font-weight: 600;
           }
-          td:nth-child(3) {
-            width: 50px;
-          }
-          td:nth-child(4){
-            width: 1192px;
+          td:nth-child(3){
+            width: 372px;
             color: $primary-color;
           }
       }
