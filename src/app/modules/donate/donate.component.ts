@@ -40,7 +40,6 @@ export class DonateComponent implements OnInit {
       .subscribe((exists: boolean) => {
         if (exists) {
           this.currentUser = this.userService.currentUser;
-          console.log('User', this.currentUser);
           this.order.name = this.currentUser.firstName;
           this.order.email = this.currentUser.email;
         }
@@ -63,13 +62,13 @@ export class DonateComponent implements OnInit {
     let id = await this.order_response(donationForm.value.amount*100);
 
     let option: any = {
-      "key": "rzp_test_7uFpRekBxdblL5", // Enter the Key ID generated from the Dashboard
-      "amount": donationForm.value.amount*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      "key": "rzp_test_7uFpRekBxdblL5",
+      "amount": donationForm.value.amount*100,
       "currency": "INR",
       "name": "Civis",
       "description": "Test Transaction",
-      "image": "https://example.com/your_logo",
-      "order_id": id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      "image": "assets/images/navlogo.png",
+      "order_id": id,
       "handler": function (response) {
         alert("Payment Successful");
         if(response){
@@ -78,7 +77,7 @@ export class DonateComponent implements OnInit {
       }.bind(this),
       "prefill": {
         "name": donationForm.value.name,
-        "email": donationForm.value.email,
+        "email": this.currentUser.email,
         "contact": donationForm.value.contact
       },
       "theme": {
@@ -86,10 +85,10 @@ export class DonateComponent implements OnInit {
       }
     };
 
-    let rzp1 = new this.ref.nativeWindow.Razorpay(option);
-    rzp1.on('payment.failed', function (response) {
+    let razorpay = new this.ref.nativeWindow.Razorpay(option);
+    razorpay.on('payment.failed', function (response) {
           alert("Payment Failed");
     });
-    rzp1.open();
+    razorpay.open();
   }
 }
