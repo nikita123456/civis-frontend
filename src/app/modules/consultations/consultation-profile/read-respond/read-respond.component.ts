@@ -12,8 +12,6 @@ import { ConsultationsService } from 'src/app/shared/services/consultations.serv
 import { CookieService } from 'ngx-cookie';
 import { isObjectEmpty } from 'src/app/shared/functions/modular.functions';
 import { ModalDirective } from 'ngx-bootstrap';
-import {MatDialog} from '@angular/material/dialog';
-import { GlossaryComponent } from 'src/app/modules/glossary/glossary.component';
 
 @Component({
   selector: 'app-read-respond',
@@ -45,10 +43,8 @@ export class ReadRespondComponent implements OnInit {
     private errorService: ErrorService,
     private consultationService: ConsultationsService,
     private title: Title,
-    private _cookieService: CookieService,
-    private dialog: MatDialog
+    private _cookieService: CookieService
   ) {
-    import('src/app/modules/glossary/glossary.module').then(m=>m.GlossaryModule);
     this.consultationService.consultationId$
     .pipe(
       filter(i => i !== null)
@@ -263,10 +259,5 @@ export class ReadRespondComponent implements OnInit {
     this.emailVerificationModal.hide();
     this.emailVerification = false;
   }
-  openDialog() {
-    const dialogRef = this.dialog.open(GlossaryComponent);
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
-  }
+
 }
