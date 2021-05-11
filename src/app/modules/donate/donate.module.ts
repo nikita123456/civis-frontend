@@ -21,6 +21,7 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
+    RouterModule,
     RouterModule.forChild(routes),
     SharedComponentsModule,
     PipesModule,

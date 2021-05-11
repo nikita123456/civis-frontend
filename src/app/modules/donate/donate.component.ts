@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { WindowRefService } from '../../shared/services/window-ref.service';
 import { environment } from '../../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { UserService } from 'src/app/shared/services/user.service';
+import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+
 
 @Component({
   selector: 'app-donate',
@@ -10,14 +13,21 @@ import { Observable } from 'rxjs';
   styleUrls: ['./donate.component.scss']
 })
 export class DonateComponent implements OnInit {
-    baseURL: string = "http://localhost:3000/orders"
 
-  constructor(private ref: WindowRefService,
-    private http: HttpClient) { }
+  constructor(
+    private ref: WindowRefService,
+    private router: Router,
+    private http: HttpClient,
+    private errorService: ErrorService,
+    private userService: UserService) {
+   }
 
   ngOnInit(): void {
+    this.checkUserSignedIn();
   }
 
+  environment = environment;
+  currentUser: any;
   order = {
   name: '',
   amount: null,
@@ -25,33 +35,32 @@ export class DonateComponent implements OnInit {
   email: null
   }
 
-  order_id=null;
+  checkUserSignedIn(){
+      this.userService.userLoaded$
+      .subscribe((exists: boolean) => {
+        if (exists) {
+          this.currentUser = this.userService.currentUser;
+          console.log('User', this.currentUser);
+          this.order.name = this.currentUser.firstName;
+          this.order.email = this.currentUser.email;
+        }
+      },
+      err => {
+        this.errorService.showErrorModal(err);
+      });
+    }
+
   async order_response(amount: any){
+    let order_send: any = { "amount": amount, "currency": "INR" }
+    const headers = { 'content-type' : 'application/json', 'responseType' : 'text' }
+    const body = JSON.stringify(order_send)
 
-      let order_send: any = {
-      "amount": amount*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-      "currency": "INR"
-      }
-
-      const headers = { 'content-type' : 'application/json', 'responseType' : 'text' }
-      const body = JSON.stringify(order_send)
-      console.log("body", body);
-
-      let response = await this.http.post( this.baseURL, body,{ 'headers' : headers }).toPromise();
-      console.log("response ", response);
-      return response["id"];
-  }
-
-  getOrder(amount: any) {
-  let value = this.order_response(amount);
-
-  console.log("Value", value);
-  return value["id"];
+    let response = await this.http.post( this.environment.api + "/orders", body,{ 'headers' : headers }).toPromise();
+    return response["id"];
   }
 
   async payWithRazor(donationForm) {
-    console.log(donationForm.value);
-    let id = await this.order_response(donationForm.value.amount);
+    let id = await this.order_response(donationForm.value.amount*100);
 
     let option: any = {
       "key": "rzp_test_7uFpRekBxdblL5", // Enter the Key ID generated from the Dashboard
@@ -62,11 +71,11 @@ export class DonateComponent implements OnInit {
       "image": "https://example.com/your_logo",
       "order_id": id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
       "handler": function (response) {
-      alert("Payment Successful");
-//         alert(response.razorpay_payment_id);
-//         alert(response.razorpay_order_id);
-//         alert(response.razorpay_signature)
-      },
+        alert("Payment Successful");
+        if(response){
+        this.router.navigateByUrl('/');
+        }
+      }.bind(this),
       "prefill": {
         "name": donationForm.value.name,
         "email": donationForm.value.email,
@@ -77,23 +86,10 @@ export class DonateComponent implements OnInit {
       }
     };
 
-console.log("oprions ", option);
     let rzp1 = new this.ref.nativeWindow.Razorpay(option);
     rzp1.on('payment.failed', function (response) {
           alert("Payment Failed");
-
-//       alert(response.error.code);
-//       alert(response.error.description);
-//       alert(response.error.source);
-//       alert(response.error.step);
-//       alert(response.error.reason);
-//       alert(response.error.metadata.order_id);
-//       alert(response.error.metadata.payment_id);
     });
-
     rzp1.open();
-
-
-}
-
+  }
 }
