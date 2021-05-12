@@ -194,7 +194,7 @@ export class NavbarComponent implements OnInit {
       this.transparentNav = true;
     }
   }
-  
+
   @HostListener('document:click', ['$event']) clickedOutside(event) {
     this.profilePopup = false;
   }
@@ -222,6 +222,19 @@ export class NavbarComponent implements OnInit {
     if (consultationIndex > 0) {
       const consulationId = urlArray[consultationIndex];
       this.router.navigateByUrl(`/consultations/${consulationId}/${subRoute}`);
+    }
+  }
+
+  donate() {
+    if (!this.currentUser) {
+      this.router.navigateByUrl('/auth');
+      return;
+    } else {
+      if (this.currentUser && this.currentUser.confirmedAt) {
+        this.router.navigateByUrl('/donate');
+      } else {
+        this.showConfirmEmailModal = true;
+      }
     }
   }
 
