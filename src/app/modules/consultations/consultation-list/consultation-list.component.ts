@@ -6,6 +6,7 @@ import { LinearLoaderService } from '../../../shared/components/linear-loader/li
 import * as moment from 'moment';
 import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
 import { UserService } from 'src/app/shared/services/user.service';
+import { ItemsList } from '@ng-select/ng-select/lib/items-list';
 
 @Component({
   selector: 'app-consultation-list',
@@ -74,7 +75,7 @@ export class ConsultationListComponent implements OnInit {
             this.loadingCard = false;
             this.loadingElements.consultationList = false;
             this.consultationListData = item;
-            this.consultationListArray = item.data;
+            this.consultationListArray = this.sortConsulationList(item.data);
             this.consultationListPaging = item.paging;
             if (!this.consultationListArray.length || 
               (this.consultationListPaging.currentPage === this.consultationListPaging.totalPages)) {
@@ -87,6 +88,17 @@ export class ConsultationListComponent implements OnInit {
             this.loader.hide();
             this.errorService.showErrorModal(err);
         });
+  }
+
+  sortConsulationList(list) {
+    const city = (this.currentUser && this.currentUser.city)  ?  this.currentUser.city.id : undefined; 
+    if (list && city) {
+      list.sort((a,b) => {
+          if (a.locationId === city && b.locationId === city) return 1;
+          return (a.locationId === city) ? -1: 1;
+      });
+    }
+    return list;
   }
 
   loadMoreCard() {
