@@ -5,7 +5,7 @@ import { GlossaryWord } from './glossary.graphql';
 import { LinearLoaderService } from '../../shared/components/linear-loader/linear-loader.service';
 import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
 import { UserService } from 'src/app/shared/services/user.service';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import { MatDialogRef} from '@angular/material/dialog';
 import { ConsultationsService } from 'src/app/shared/services/consultations.service';
 
 @Component({
