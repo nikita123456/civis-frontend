@@ -3,7 +3,7 @@
 @import "~@ng-select/ng-select/themes/default.theme.css";
 @import '~@ngx-share/button/themes/default/default-theme';
 @import url('https://fonts.googleapis.com/css?family=Encode+Sans:400,500,600&display=swap');
-
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
 * {
   &::selection {
     background-color: $primary-color;
@@ -47,4 +47,8 @@ body {
   font-size: 14px;
   margin: 0;
   font-family: 'Encode Sans', sans-serif !important;
+}
+
+.profane-word .mat-dialog-container{
+  padding: 0;
 }

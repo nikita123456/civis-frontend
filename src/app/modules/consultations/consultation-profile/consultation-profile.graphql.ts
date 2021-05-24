@@ -245,6 +245,24 @@ export const VoteDeleteQuery = gql `
   }
 `;
 
+export const CreateProfanityCountRecord=gql`
+  mutation userProfanityCountCreate($userProfanityCount:UserProfanityCountInput!){
+    userProfanityCountCreate(userProfanityCount: $userProfanityCount){
+      userId
+      profanityCount
+    }
+  }
+`;
+
+export const userProfanityCountUser=gql`
+  query userProfanityCountUser($userId: Int!){
+    userProfanityCountUser(userId: $userId){
+      userId
+      profanityCount
+    }
+  }
+`;
+
 export const SubmitResponseQuery = gql`
   mutation consultationResponseCreate($consultationResponse: ConsultationResponseCreateInput!){
     consultationResponseCreate(consultationResponse: $consultationResponse){

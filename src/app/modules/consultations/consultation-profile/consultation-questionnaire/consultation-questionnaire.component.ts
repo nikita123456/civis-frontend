@@ -5,9 +5,13 @@ import { ConsultationsService } from 'src/app/shared/services/consultations.serv
 import { isObjectEmpty, checkPropertiesPresence, scrollToFirstError } from '../../../../shared/functions/modular.functions';
 import { atLeastOneCheckboxCheckedValidator } from 'src/app/shared/validators/checkbox-validator';
 import { Apollo } from 'apollo-angular';
-import { SubmitResponseQuery, ConsultationProfileCurrentUser } from '../consultation-profile.graphql';
+import { SubmitResponseQuery, ConsultationProfileCurrentUser,CreateProfanityCountRecord,userProfanityCountUser } from '../consultation-profile.graphql';
 import { filter, map } from 'rxjs/operators';
 import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
+import {MatDialog} from '@angular/material/dialog'
+import { ProfaneWordPopUpComponent } from 'src/app/modules/profane-word-pop-up/profane-word-pop-up.component';
+import { ProfaneWordPopUpModule } from 'src/app/modules/profane-word-pop-up/profaneWordPopUp.module';
+declare var require:any;
 
 
 @Component({
@@ -39,12 +43,17 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   respondedRounds = [];
   responseCreated: boolean;
   authModal = false;
+  profanity_check:boolean=false;
+  checkProfanity='';
+  profaneCount: any;
+  userData:any;
   constructor(private _fb: FormBuilder,
     private userService: UserService,
     private consultationService: ConsultationsService,
     private apollo: Apollo,
     private errorService: ErrorService,
-    private el: ElementRef) {
+    private el: ElementRef,
+    private dialog: MatDialog) {
     this.questionnaireForm = this._fb.group({});
     this.consultationService.consultationId$
     .pipe(
@@ -53,8 +62,8 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     .subscribe((consulationId: any) => {
       this.consultationId = consulationId;
     });
+    import('src/app/modules/profane-word-pop-up/profaneWordPopUp.module').then(m=>ProfaneWordPopUpModule);
   }
-
   ngOnInit(): void {
     this.getCurrentUser();
     this.subscribeProfileData();
@@ -179,6 +188,80 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     return true;
   }
 
+  onSubmit(){
+    console.log("a")
+    this.apollo.watchQuery({
+      query: userProfanityCountUser,
+      variables: {userId:this.currentUser.id},
+      // awaitRefetchQueries:true,
+      fetchPolicy:'network-only'
+    })
+    .valueChanges
+    .pipe (
+      map((res: any) => res.data.userProfanityCountUser)
+    )
+    .subscribe(data => {
+      this.userData=data;
+      this.updateProfanityCount();
+      
+    }, err => {
+      const e = new Error(err);
+        this.errorService.showErrorModal(err);
+    });
+    // setTimeout(()=>{console.log("sleep")
+      // this.updateProfanityCount();     
+  // },100);
+   
+  }
+
+  updateProfanityCount(){
+    console.log("b");
+    console.log(this.userData);
+    if (this.userData){
+      this.profaneCount=this.userData.profanityCount
+    }
+
+    var Filter = require('bad-words'),
+    filter = new Filter();
+    filter.addWords();
+    console.log(this.profaneCount);
+
+    this.profanity_check=filter.isProfane(this.checkProfanity);
+    if(this.profanity_check){
+      this.profaneCount+=1;
+    }
+    else {
+     this.profaneCount=0;
+    }
+    if(this.profaneCount>3){
+     this.showErrorPopUp();
+    }
+    else{
+      console.log(this.profaneCount);
+      this.apollo.mutate({
+      mutation: CreateProfanityCountRecord,
+      variables:{
+        userProfanityCount:{
+        userId: this.currentUser.id,
+        profanityCount:this.profaneCount
+        }
+       },
+     })
+     .subscribe((data) => {
+     }, err => {
+     this.errorService.showErrorModal(err);
+     });
+   }
+  }
+
+  showErrorPopUp(){
+    const dialogRef = this.dialog.open(ProfaneWordPopUpComponent,{
+      height:'50px',
+      width:'600px',
+      panelClass: 'profane-word'
+    })
+
+  }
   submitAnswer() {
     if (this.responseSubmitLoading) {
       return;
