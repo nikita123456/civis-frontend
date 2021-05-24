@@ -194,22 +194,29 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
       query: userProfanityCountUser,
       variables: {userId:this.currentUser.id},
       // awaitRefetchQueries:true,
-      fetchPolicy:'network-only'
+      fetchPolicy:'no-cache'
     })
     .valueChanges
     .pipe (
       map((res: any) => res.data.userProfanityCountUser)
     )
     .subscribe(data => {
+      // debugger
       this.userData=data;
-      this.updateProfanityCount();
+      // console.log(this.userData);
+      // data.delete;
+      // if(){
+              this.updateProfanityCount();
+
+      // }
+      // this.updateProfanityCount();
       
     }, err => {
       const e = new Error(err);
         this.errorService.showErrorModal(err);
     });
-    // setTimeout(()=>{console.log("sleep")
-      // this.updateProfanityCount();     
+  //   setTimeout(()=>{console.log("sleep")
+  //     this.updateProfanityCount();     
   // },100);
    
   }
@@ -217,8 +224,23 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   updateProfanityCount(){
     console.log("b");
     console.log(this.userData);
-    if (this.userData){
+    if (this.userData!=null){
       this.profaneCount=this.userData.profanityCount
+    }
+    else{
+      this.apollo.mutate({
+        mutation: CreateProfanityCountRecord,
+        variables:{
+          userProfanityCount:{
+          userId: this.currentUser.id,
+          profanityCount:0
+          }
+         },
+       })
+       .subscribe((data) => {
+       }, err => {
+       this.errorService.showErrorModal(err);
+       });
     }
 
     var Filter = require('bad-words'),
