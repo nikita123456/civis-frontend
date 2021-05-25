@@ -23,7 +23,6 @@ export class DonateComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.checkUserSignedIn();
   }
 
   environment = environment;
@@ -35,19 +34,6 @@ export class DonateComponent implements OnInit {
   email: null
   }
 
-  checkUserSignedIn(){
-      this.userService.userLoaded$
-      .subscribe((exists: boolean) => {
-        if (exists) {
-          this.currentUser = this.userService.currentUser;
-          this.order.name = this.currentUser.firstName;
-          this.order.email = this.currentUser.email;
-        }
-      },
-      err => {
-        this.errorService.showErrorModal(err);
-      });
-    }
 
   async order_response(amount: any){
     let order_send: any = { "amount": amount, "currency": "INR" }
@@ -77,7 +63,7 @@ export class DonateComponent implements OnInit {
       }.bind(this),
       "prefill": {
         "name": donationForm.value.name,
-        "email": this.currentUser.email,
+        "email": donationForm.value.email,
         "contact": donationForm.value.contact
       },
       "theme": {

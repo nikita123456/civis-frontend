@@ -15,7 +15,7 @@
               <div class="input-block">
                 <label for="name">{{'Name' | translate}}</label>
                 <div class="input-block__border">
-                    <input type="text" placeholder="Enter name" name="name" #name="ngModel" id="name" [(ngModel)]="order.name" required disabled/>
+                    <input type="text" placeholder="Enter name" name="name" #name="ngModel" id="name" [(ngModel)]="order.name" required />
                 </div>
               </div>
             <div class="input-block">
@@ -39,7 +39,7 @@
             <div class="input-block">
               <label for="email">{{'Email' | translate}}</label>
               <div class="input-block__border">
-                  <input type="email" placeholder="Enter Email" name="email" #email="ngModel" id="email" [(ngModel)]="order.email" email disabled/>
+                  <input type="email" placeholder="Enter Email" name="email" #email="ngModel" id="email" [(ngModel)]="order.email" email />
               </div>
               <div *ngIf="email.invalid && (email.touched || donationForm.submitted)" class="error-msg">
                 <div *ngIf="email.errors.required">{{'Email is Required' | translate}}</div>
