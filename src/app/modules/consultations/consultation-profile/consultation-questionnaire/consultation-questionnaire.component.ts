@@ -43,10 +43,11 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   respondedRounds = [];
   responseCreated: boolean;
   authModal = false;
-  profanity_check:boolean=false;
-  checkProfanity='';
-  profaneCount: any;
+  userResponse='';
+  profaneCount: 0;
   userData:any;
+  profanity_count_changed:boolean=false;
+  profanity_count_exceeded:boolean=false;
   constructor(private _fb: FormBuilder,
     private userService: UserService,
     private consultationService: ConsultationsService,
@@ -188,78 +189,69 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     return true;
   }
 
-  onSubmit(){
-    console.log("a")
+  profanityCheck(){
     this.apollo.watchQuery({
       query: userProfanityCountUser,
       variables: {userId:this.currentUser.id},
-      // awaitRefetchQueries:true,
-      fetchPolicy:'no-cache'
     })
     .valueChanges
     .pipe (
       map((res: any) => res.data.userProfanityCountUser)
     )
     .subscribe(data => {
-      // debugger
-      this.userData=data;
-      // console.log(this.userData);
-      // data.delete;
-      // if(){
-              this.updateProfanityCount();
-
-      // }
-      // this.updateProfanityCount();
-      
+      if(!this.profanity_count_changed){
+        this.userData=data;
+        this.updateProfanityCount();
+      }
     }, err => {
       const e = new Error(err);
         this.errorService.showErrorModal(err);
     });
-  //   setTimeout(()=>{console.log("sleep")
-  //     this.updateProfanityCount();     
-  // },100);
-   
   }
 
   updateProfanityCount(){
-    console.log("b");
-    console.log(this.userData);
-    if (this.userData!=null){
-      this.profaneCount=this.userData.profanityCount
-    }
-    else{
-      this.apollo.mutate({
-        mutation: CreateProfanityCountRecord,
-        variables:{
-          userProfanityCount:{
-          userId: this.currentUser.id,
-          profanityCount:0
-          }
-         },
-       })
-       .subscribe((data) => {
-       }, err => {
-       this.errorService.showErrorModal(err);
-       });
-    }
-
     var Filter = require('bad-words'),
     filter = new Filter();
     filter.addWords();
-    console.log(this.profaneCount);
 
-    this.profanity_check=filter.isProfane(this.checkProfanity);
-    if(this.profanity_check){
+    const isUserResponseProfane=filter.isProfane(this.userResponse);
+    if (this.userData!==null){
+      this.profaneCount=this.userData.profanityCount
+    }
+    else{
+      this.profaneCount=0;
+      if(!isUserResponseProfane){
+        this.apollo.mutate({
+          mutation: CreateProfanityCountRecord,
+          variables:{
+            userProfanityCount:{
+            userId: this.currentUser.id,
+            profanityCount:0
+            }
+           },
+         })
+         .subscribe((data) => {
+         }, err => {
+         this.errorService.showErrorModal(err);
+         });
+         this.profanity_count_changed=true;
+
+         return;
+      }
+    }
+
+    if(isUserResponseProfane){
       this.profaneCount+=1;
     }
     else {
      this.profaneCount=0;
     }
     if(this.profaneCount>3){
-     this.showErrorPopUp();
+      this.profanity_count_exceeded=true;
+      this.showErrorPopUp();
+      return;
     }
     else{
-      console.log(this.profaneCount);
       this.apollo.mutate({
       mutation: CreateProfanityCountRecord,
       variables:{
@@ -274,6 +266,8 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
      this.errorService.showErrorModal(err);
      });
    }
+   this.profanity_count_changed=true;
+   this.profanity_count_exceeded=false;
   }
 
   showErrorPopUp(){
@@ -285,21 +279,30 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
 
   }
   submitAnswer() {
-    if (this.responseSubmitLoading) {
+    if (this.responseSubmitLoading ) {
       return;
     }
     if (this.questionnaireForm.valid && this.responseFeedback) {
-      this.responseAnswers = this.getResponseAnswers();
-      const consultationResponse = this.getConsultationResponse();
-      if (!isObjectEmpty(consultationResponse)) {
-        if (this.currentUser) {
-          this.submitResponse(consultationResponse);
-          this.showError = false;
-        } else {
-          this.authModal = true;
-          localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
+      this.profanityCheck();
+      //wait till profanityCheck function finishes....
+      setTimeout(()=>{
+        if(this.profanity_count_exceeded){
+          return;
         }
-      }
+        this.responseAnswers = this.getResponseAnswers();
+        const consultationResponse = this.getConsultationResponse();
+        if (!isObjectEmpty(consultationResponse)) {
+          if (this.currentUser) {
+            this.submitResponse(consultationResponse);
+            this.showError = false;
+          } else {
+            this.authModal = true;
+            
+            localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
+          }
+        }
+      },1000);
+      
     } else {
       if (!this.responseFeedback) {
         this.consultationService.satisfactionRatingError.next(true);
