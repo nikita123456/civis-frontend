@@ -226,16 +226,7 @@ export class NavbarComponent implements OnInit {
   }
 
   donate() {
-    if (!this.currentUser) {
-      this.router.navigateByUrl('/auth');
-      return;
-    } else {
-      if (this.currentUser && this.currentUser.confirmedAt) {
-        this.router.navigateByUrl('/donate');
-      } else {
-        this.showConfirmEmailModal = true;
-      }
-    }
+    this.router.navigateByUrl('/donate');
   }
 
   submitConsultation() {
