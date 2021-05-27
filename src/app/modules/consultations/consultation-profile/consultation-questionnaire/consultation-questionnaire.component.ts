@@ -5,12 +5,11 @@ import { ConsultationsService } from 'src/app/shared/services/consultations.serv
 import { isObjectEmpty, checkPropertiesPresence, scrollToFirstError } from '../../../../shared/functions/modular.functions';
 import { atLeastOneCheckboxCheckedValidator } from 'src/app/shared/validators/checkbox-validator';
 import { Apollo } from 'apollo-angular';
-import { SubmitResponseQuery, ConsultationProfileCurrentUser,CreateProfanityCountRecord,userProfanityCountUser } from '../consultation-profile.graphql';
+import { SubmitResponseQuery, ConsultationProfileCurrentUser, CreateUserProfanityCountRecord,UpdateUserProfanityCountRecord, UserProfanityCountUser } from '../consultation-profile.graphql';
 import { filter, map } from 'rxjs/operators';
 import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
 import {MatDialog} from '@angular/material/dialog'
 import { ProfaneWordPopUpComponent } from 'src/app/modules/profane-word-pop-up/profane-word-pop-up.component';
-import { ProfaneWordPopUpModule } from 'src/app/modules/profane-word-pop-up/profaneWordPopUp.module';
 declare var require:any;
 
 
@@ -44,10 +43,10 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   responseCreated: boolean;
   authModal = false;
   userResponse='';
-  profaneCount: 0;
+  profaneCount: any;
   userData:any;
   profanity_count_changed:boolean=false;
-  profanity_count_exceeded:boolean=false;
+  isUserResponseProfane: boolean=false;
   constructor(private _fb: FormBuilder,
     private userService: UserService,
     private consultationService: ConsultationsService,
@@ -63,8 +62,9 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     .subscribe((consulationId: any) => {
       this.consultationId = consulationId;
     });
-    import('src/app/modules/profane-word-pop-up/profaneWordPopUp.module').then(m=>ProfaneWordPopUpModule);
+    import('src/app/modules/profane-word-pop-up/profaneWordPopUp.module').then(m=>m.ProfaneWordPopUpModule);
   }
+
   ngOnInit(): void {
     this.getCurrentUser();
     this.subscribeProfileData();
@@ -189,71 +189,93 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     return true;
   }
 
-  profanityCheck(){
-    this.apollo.watchQuery({
-      query: userProfanityCountUser,
-      variables: {userId:this.currentUser.id},
-    })
-    .valueChanges
-    .pipe (
-      map((res: any) => res.data.userProfanityCountUser)
-    )
-    .subscribe(data => {
-      if(!this.profanity_count_changed){
-        this.userData=data;
-        this.updateProfanityCount();
+  submitAnswerWithProfanityCheck(){
+    if (this.responseSubmitLoading ) {
+      return;
+    }
+    if (this.questionnaireForm.valid && this.responseFeedback) {
+        this.responseAnswers = this.getResponseAnswers();
+        const consultationResponse = this.getConsultationResponse();
+        if (!isObjectEmpty(consultationResponse)) {
+          if (this.currentUser) {
+            this.apollo.watchQuery({
+              query: UserProfanityCountUser,
+              variables: {userId:this.currentUser.id},
+            })
+            .valueChanges
+            .pipe (
+              map((res: any) => res.data.userProfanityCountUser)
+            )
+            .subscribe(data => {
+              if(!this.profanity_count_changed){
+                this.userData=data;
+                this.updateProfanityCount();
+              }
+            }, err => {
+              const e = new Error(err);
+                this.errorService.showErrorModal(err);
+            });
+          } else {
+            this.authModal = true;
+            localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
+          }
+        }
+      
+    } else {
+      if (!this.responseFeedback) {
+        this.consultationService.satisfactionRatingError.next(true);
       }
-    }, err => {
-      const e = new Error(err);
-        this.errorService.showErrorModal(err);
-    });
+      this.showError = true;
+      this.scrollToError = true;
+    }
+    
   }
 
   updateProfanityCount(){
     var Filter = require('bad-words'),
     filter = new Filter();
     filter.addWords();
+    this.isUserResponseProfane=filter.isProfane(this.userResponse);
 
-    const isUserResponseProfane=filter.isProfane(this.userResponse);
     if (this.userData!==null){
-      this.profaneCount=this.userData.profanityCount
+      this.profaneCount=this.userData.profanityCount;
     }
     else{
       this.profaneCount=0;
-      if(!isUserResponseProfane){
-        this.apollo.mutate({
-          mutation: CreateProfanityCountRecord,
-          variables:{
-            userProfanityCount:{
-            userId: this.currentUser.id,
-            profanityCount:0
-            }
-           },
-         })
-         .subscribe((data) => {
-         }, err => {
-         this.errorService.showErrorModal(err);
-         });
-         this.profanity_count_changed=true;
-
-         return;
+      if(this.isUserResponseProfane){
+        this.profaneCount+=1;
       }
+      this.apollo.mutate({
+        mutation: CreateUserProfanityCountRecord,
+        variables:{
+          userProfanityCount:{
+          userId: this.currentUser.id,
+          profanityCount:this.profaneCount
+          }
+         },
+       })
+       .subscribe((data) => {
+         this.submitAnswer();
+       }, err => {
+       this.errorService.showErrorModal(err);
+       });
+       this.profanity_count_changed=true;
+       return;
     }
 
-    if(isUserResponseProfane){
+    if(this.isUserResponseProfane){
       this.profaneCount+=1;
+    }else{
+      this.profaneCount=0;
     }
-    else {
-     this.profaneCount=0;
-    }
+  
     if(this.profaneCount>3){
-      this.profanity_count_exceeded=true;
       this.showErrorPopUp();
       return;
     }
     else{
       this.apollo.mutate({
-      mutation: CreateProfanityCountRecord,
+      mutation: UpdateUserProfanityCountRecord,
       variables:{
         userProfanityCount:{
         userId: this.currentUser.id,
@@ -262,12 +284,12 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
        },
      })
      .subscribe((data) => {
+       this.submitAnswer();
      }, err => {
      this.errorService.showErrorModal(err);
      });
+     this.profanity_count_changed=true;
    }
-   this.profanity_count_changed=true;
-   this.profanity_count_exceeded=false;
   }
 
   showErrorPopUp(){
@@ -278,31 +300,23 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     })
 
   }
+
   submitAnswer() {
-    if (this.responseSubmitLoading ) {
+    if (this.responseSubmitLoading) {
       return;
     }
     if (this.questionnaireForm.valid && this.responseFeedback) {
-      this.profanityCheck();
-      //wait till profanityCheck function finishes....
-      setTimeout(()=>{
-        if(this.profanity_count_exceeded){
-          return;
+      this.responseAnswers = this.getResponseAnswers();
+      const consultationResponse = this.getConsultationResponse();
+      if (!isObjectEmpty(consultationResponse)) {
+        if (this.currentUser) {
+          this.submitResponse(consultationResponse);
+          this.showError = false;
+        } else {
+          this.authModal = true;
+          localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
         }
-        this.responseAnswers = this.getResponseAnswers();
-        const consultationResponse = this.getConsultationResponse();
-        if (!isObjectEmpty(consultationResponse)) {
-          if (this.currentUser) {
-            this.submitResponse(consultationResponse);
-            this.showError = false;
-          } else {
-            this.authModal = true;
-            
-            localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
-          }
-        }
-      },1000);
-      
+      }
     } else {
       if (!this.responseFeedback) {
         this.consultationService.satisfactionRatingError.next(true);

@@ -5,8 +5,11 @@ import { filter, map } from 'rxjs/operators';
 import { isObjectEmpty, checkPropertiesPresence, scrollToFirstError } from 'src/app/shared/functions/modular.functions';
 import { Router } from '@angular/router';
 import { Apollo } from 'apollo-angular';
-import { ConsultationProfileCurrentUser, SubmitResponseQuery } from '../consultation-profile.graphql';
+import { ConsultationProfileCurrentUser, SubmitResponseQuery, CreateUserProfanityCountRecord, UpdateUserProfanityCountRecord,UserProfanityCountUser } from '../consultation-profile.graphql';
 import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
+import {MatDialog} from '@angular/material/dialog'
+import { ProfaneWordPopUpComponent } from 'src/app/modules/profane-word-pop-up/profane-word-pop-up.component';
+declare var require:any;
 
 @Component({
   selector: 'app-consultation-response-text',
@@ -42,12 +45,16 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
   responseSubmitLoading: boolean;
   scrollToError: any;
   authModal = false;
-
+  profaneCount: any;
+  userData:any;
+  profanity_count_changed:boolean=false;
+  isUserResponseProfane: boolean=false;
   constructor(
     private userService: UserService,
     private consultationService: ConsultationsService,
     private router: Router,
     private el: ElementRef,
+    private dialog: MatDialog,
     private apollo: Apollo,
     private errorService: ErrorService) {
       this.consultationService.consultationId$
@@ -57,6 +64,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
       .subscribe((consulationId: any) => {
         this.consultationId = consulationId;
       });
+    import('src/app/modules/profane-word-pop-up/profaneWordPopUp.module').then(m=>m.ProfaneWordPopUpModule);
    }
 
   ngOnInit(): void {
@@ -269,6 +277,116 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
     return true;
   }
 
+  submitAnswerWithProfanityCheck(){
+    if (this.responseSubmitLoading ) {
+      return;
+    }
+    if (this.responseText && this.responseFeedback) {
+      const consultationResponse = this.getConsultationResponse();
+      if (!isObjectEmpty(consultationResponse)) {
+        if (this.currentUser) {
+            this.apollo.watchQuery({
+              query: UserProfanityCountUser,
+              variables: {userId:this.currentUser.id},
+            })
+            .valueChanges
+            .pipe (
+              map((res: any) => res.data.userProfanityCountUser)
+            )
+            .subscribe(data => {
+              if(!this.profanity_count_changed){
+                this.userData=data;
+                this.updateProfanityCount();
+              }
+            }, err => {
+              const e = new Error(err);
+                this.errorService.showErrorModal(err);
+            });
+          } else {
+            this.authModal = true;            
+            localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
+          }
+        }
+      
+    } else {
+      if (!this.responseFeedback) {
+        this.consultationService.satisfactionRatingError.next(true);
+      }
+      this.showError = true;
+      this.scrollToError = true;
+    }
+    
+  }
+
+  updateProfanityCount(){
+    var Filter = require('bad-words'),
+    filter = new Filter();
+    filter.addWords();
+    this.isUserResponseProfane=filter.isProfane(this.responseText);
+
+    if (this.userData!==null){
+      this.profaneCount=this.userData.profanityCount;
+    }
+    else{
+      this.profaneCount=0;
+      if(this.isUserResponseProfane){
+        this.profaneCount+=1;
+      }
+      this.apollo.mutate({
+        mutation: CreateUserProfanityCountRecord,
+        variables:{
+          userProfanityCount:{
+          userId: this.currentUser.id,
+          profanityCount:this.profaneCount
+          }
+         },
+       })
+       .subscribe((data) => {
+         this.submitAnswer();
+       }, err => {
+       this.errorService.showErrorModal(err);
+       });
+       this.profanity_count_changed=true;
+       return;
+    }
+
+    if(this.isUserResponseProfane){
+      this.profaneCount+=1;
+    }else{
+      this.profaneCount=0;
+    }
+    
+    if(this.profaneCount>3){
+      this.showErrorPopUp();
+      return;
+    }
+    else{
+      this.apollo.mutate({
+      mutation: UpdateUserProfanityCountRecord,
+      variables:{
+        userProfanityCount:{
+        userId: this.currentUser.id,
+        profanityCount:this.profaneCount
+        }
+       },
+     })
+     .subscribe((data) => {
+       this.submitAnswer();
+     }, err => {
+     this.errorService.showErrorModal(err);
+     });
+     this.profanity_count_changed=true;
+   }
+  }
+
+  showErrorPopUp(){
+    const dialogRef = this.dialog.open(ProfaneWordPopUpComponent,{
+      height:'50px',
+      width:'600px',
+      panelClass: 'profane-word'
+    })
+  }
+  
   submitAnswer() {
     if (this.responseSubmitLoading) {
       return;
