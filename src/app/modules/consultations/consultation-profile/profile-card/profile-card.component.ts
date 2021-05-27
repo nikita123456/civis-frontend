@@ -35,10 +35,9 @@ export class ProfileCardComponent implements OnInit, OnChanges {
               private cookieService: CookieService,
               private router: Router,
               private dialog: MatDialog
-              ) {
+              ){
                 import('src/app/modules/glossary/glossary.module').then(m=>m.GlossaryModule);
-
-               }
+              }
 
   ngOnInit() {
       this.currentUrl = window.location.href;
