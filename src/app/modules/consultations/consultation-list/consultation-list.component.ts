@@ -91,11 +91,11 @@ export class ConsultationListComponent implements OnInit {
   }
 
   sortConsulationList(list) {
-    const city = (this.currentUser && this.currentUser.city)  ?  this.currentUser.city.id : undefined; 
+    const city = (this.currentUser && this.currentUser.city)  ?  this.currentUser.city.id : undefined;
     if (list && city) {
       list.sort((a,b) => {
-          if (a.locationId === city && b.locationId === city) return 1;
-          return (a.locationId === city) ? -1: 1;
+          if (a.ministry.locationId === city && b.ministry.locationId === city) return 1;
+          return (a.ministry.locationId === city) ? -1: 1;
       });
     }
     return list;
