@@ -395,7 +395,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   validateAnswers() {
     this.consultationService.validateAnswers.subscribe((value) => {
       if (value) {
-        this.submitAnswer();
+        this.submitAnswerWithProfanityCheck();
         this.consultationService.validateAnswers.next(false);
       }
     });

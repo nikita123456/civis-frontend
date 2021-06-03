@@ -86,7 +86,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
     this.consultationService.submitResponseText
     .subscribe((status) => {
       if (status) {
-        this.submitAnswer();
+        this.submitAnswerWithProfanityCheck();
       }
     });
   }
