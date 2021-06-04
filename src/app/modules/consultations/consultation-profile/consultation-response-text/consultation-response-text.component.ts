@@ -288,6 +288,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
             this.apollo.watchQuery({
               query: UserProfanityCountUser,
               variables: {userId:this.currentUser.id},
+              fetchPolicy:'no-cache'
             })
             .valueChanges
             .pipe (
