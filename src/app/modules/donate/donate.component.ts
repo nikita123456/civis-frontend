@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, ElementRef } from '@angular/core';
 import { WindowRefService } from '../../shared/services/window-ref.service';
 import { environment } from '../../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UserService } from 'src/app/shared/services/user.service';
 import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { ToastService } from 'src/app/shared/components/toast/toast.service';
 
 
 @Component({
@@ -19,19 +20,19 @@ export class DonateComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private errorService: ErrorService,
-    private userService: UserService) {
+    private userService: UserService,
+    private toastService: ToastService) {
    }
 
   ngOnInit(): void {
   }
 
   environment = environment;
-  currentUser: any;
   order = {
-  name: '',
-  amount: null,
-  contact: null,
-  email: null
+    name: '',
+    amount: null,
+    contact: null,
+    email: null
   }
 
 
@@ -55,12 +56,12 @@ export class DonateComponent implements OnInit {
       "description": "Test Transaction",
       "image": "assets/images/navlogo.png",
       "order_id": id,
-      "handler": function (response) {
-        alert("Payment Successful");
+      "handler": (response) => {
+        this.toastService.displayToast("success","Payment Successful!");
         if(response){
-        this.router.navigateByUrl('/');
+          this.router.navigateByUrl('/');
         }
-      }.bind(this),
+      },
       "prefill": {
         "name": donationForm.value.name,
         "email": donationForm.value.email,
@@ -72,8 +73,8 @@ export class DonateComponent implements OnInit {
     };
 
     let razorpay = new this.ref.nativeWindow.Razorpay(option);
-    razorpay.on('payment.failed', function (response) {
-          alert("Payment Failed");
+    razorpay.on('payment.failed', (response) => {
+        this.toastService.displayToast("error","Payment Failed");
     });
     razorpay.open();
   }

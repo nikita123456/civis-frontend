@@ -202,8 +202,5 @@ export class ProfileCardComponent implements OnInit, OnChanges {
       height:'400px',
       width:'600px',
     });
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
   }
 }
