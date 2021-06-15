@@ -4,7 +4,7 @@
     <div class="conf-modal--message">{{message.msg}}</div>
     <div class="conf-modal--buttons float-right">
       <button style="background: #1894EA; color: white;" (click)="selectOpt('ok')">Ok</button>
-      <button (click)="selectOpt('cancel')" class="ml-2">Cancel</button>
+      <button (click)="selectOpt('cancel')" *ngIf="showCancel" class="ml-2">Cancel</button>
  </div>
   </div>
 </div>

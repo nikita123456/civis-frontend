@@ -11,9 +11,14 @@ export class ConfirmationModalComponent implements OnInit {
     msg: null
   };
   @Output() close = new EventEmitter<boolean>();
-  constructor() { }
+  @Input() showCancel = false;
+
+  constructor() { 
+    
+  }
 
   ngOnInit() {
+    console.log(this.showCancel);
   }
 
   selectOpt(opt: string) {

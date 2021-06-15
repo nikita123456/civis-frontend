@@ -45,6 +45,11 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
   responseSubmitLoading: boolean;
   scrollToError: any;
   authModal = false;
+  isConfirmModal = false;
+  confirmMessage = {
+    msg: 'test',
+    title: 'Profane'
+  };
   profaneCount: any;
   userData:any;
   profanity_count_changed:boolean=false;
@@ -278,6 +283,10 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
   }
 
   submitAnswerWithProfanityCheck(){
+    if (true) {
+      this.isConfirmModal = true;
+      return;
+    }
     if (this.responseSubmitLoading ) {
       return;
     }
@@ -387,6 +396,11 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
       width:'600px',
       panelClass: 'profane-word'
     })
+  }
+
+  confirmed(event) {
+    alert('fff');
+    this.isConfirmModal = false;
   }
   
   submitAnswer() {
