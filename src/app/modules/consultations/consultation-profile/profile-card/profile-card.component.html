@@ -128,5 +128,5 @@
     </div>
   </div>
 </div>
-
+<app-glossary *ngIf="showGlossaryModal" (close)="showGlossaryModal = false"></app-glossary>
 <app-confirm-email-modal *ngIf="showConfirmEmailModal" (close)="showConfirmEmailModal = false"></app-confirm-email-modal>

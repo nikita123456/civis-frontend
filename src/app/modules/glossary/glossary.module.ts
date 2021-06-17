@@ -1,16 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Routes, RouterModule } from '@angular/router';
 import { GlossaryComponent } from './glossary.component';
 import { SharedComponentsModule } from 'src/app/shared/components/shared-components.module';
 import { PipesModule } from 'src/app/shared/pipes/pipes.module';
-
-const routes: Routes = [
-  {
-    path: '',
-    component: GlossaryComponent
-  }
-];
+import { ModalModule } from 'ngx-bootstrap';
 
 @NgModule({
   declarations: [
@@ -18,10 +11,10 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes),
+    ModalModule,
     SharedComponentsModule,
     PipesModule
   ],
-  exports: [RouterModule],
+  exports: [GlossaryComponent],
 })
 export class GlossaryModule { }
