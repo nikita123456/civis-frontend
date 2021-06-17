@@ -5,7 +5,6 @@ import { ConsultationsService } from 'src/app/shared/services/consultations.serv
 import { UserService } from 'src/app/shared/services/user.service';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie';
-import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-profile-card',
@@ -33,8 +32,7 @@ export class ProfileCardComponent implements OnInit, OnChanges {
   constructor(private consultationsService: ConsultationsService,
               private userService: UserService,
               private cookieService: CookieService,
-              private router: Router,
-              private dialog: MatDialog
+              private router: Router
               ){}
 
   ngOnInit() {
