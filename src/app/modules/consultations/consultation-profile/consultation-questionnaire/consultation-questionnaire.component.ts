@@ -271,20 +271,15 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   }
 
   if(this.isUserResponseProfane){
+    if (!this.nudgeMessageDisplayed) {
+      this.isConfirmModal = true;
+      this.nudgeMessageDisplayed=true;
+      return;
+    }
     this.profaneCount+=1;
-    if(this.profaneCount>3){
+    if(this.profaneCount>=3){
       this.confirmMessage.msg = 'We detected that your response may contain harmful language. This response will be moderated and sent to the Government at our moderator\'s discretion.'
       this.isConfirmModal = true;
-    }
-    else{
-      if (!this.nudgeMessageDisplayed) {
-        this.isConfirmModal = true;
-        this.nudgeMessageDisplayed=true;
-        if(this.isUserResponseProfane){
-          this.profaneCount-=1;
-        }
-        return;
-      }
     }
   }
   else{
