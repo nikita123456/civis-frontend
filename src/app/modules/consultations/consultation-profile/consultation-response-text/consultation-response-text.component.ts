@@ -47,9 +47,10 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
   authModal = false;
   isConfirmModal = false;
   confirmMessage = {
-    msg: 'test',
+    msg: 'Do you want to reconsider your response? We detected some potentially harmful language, and to keep Civis safe and open we recommend revising responses that were detected as potentially harmful.',
     title: 'Profane'
   };
+  nudgeMessageDisplayed = false;
   profaneCount: any;
   userData:any;
   profanity_count_changed:boolean=false;
@@ -283,10 +284,6 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
   }
 
   submitAnswerWithProfanityCheck(){
-    if (true) {
-      this.isConfirmModal = true;
-      return;
-    }
     if (this.responseSubmitLoading ) {
       return;
     }
@@ -352,7 +349,17 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
           }
          },
        })
-       .subscribe((data) => {
+        .subscribe((data) => {
+          if (!this.nudgeMessageDisplayed) {
+         this.isConfirmModal = true;
+         this.nudgeMessageDisplayed=true;
+         return;
+       }
+       // else{
+       //   this.confirmMessage.msg = 'We detected that your response may contain harmful language. This response will be moderated and sent to the Government at our moderator\'s discretion.'
+       //   this.isConfirmModal = true;
+       //   return;
+       // }
          this.submitAnswer();
        }, err => {
        this.errorService.showErrorModal(err);
@@ -363,15 +370,16 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
 
     if(this.isUserResponseProfane){
       this.profaneCount+=1;
-    }else{
-      this.profaneCount=0;
     }
+    // else{
+    //   this.profaneCount=0;
+    // }
     
-    if(this.profaneCount>3){
-      this.showErrorPopUp();
-      return;
-    }
-    else{
+    // if(this.profaneCount>3){
+    //   this.showErrorPopUp();
+    //   return;
+    // }
+    // else{
       this.apollo.mutate({
       mutation: UpdateUserProfanityCountRecord,
       variables:{
@@ -382,12 +390,24 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
        },
      })
      .subscribe((data) => {
+       if(this.profaneCount>3){
+        this.confirmMessage.msg = 'We detected that your response may contain harmful language. This response will be moderated and sent to the Government at our moderator\'s discretion.'
+        this.isConfirmModal = true;
+        this.submitAnswer();
+       }
+       else{
+        if (!this.nudgeMessageDisplayed) {
+          this.isConfirmModal = true;
+          this.nudgeMessageDisplayed=true;
+          return;
+        }
+       }
        this.submitAnswer();
      }, err => {
      this.errorService.showErrorModal(err);
      });
      this.profanity_count_changed=true;
-   }
+  //  }
   }
 
   showErrorPopUp(){
@@ -399,7 +419,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
   }
 
   confirmed(event) {
-    alert('fff');
+    // alert('fff');
     this.isConfirmModal = false;
   }
   
