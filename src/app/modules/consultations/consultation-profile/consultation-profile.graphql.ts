@@ -230,7 +230,7 @@ export const ConsultationProfileCurrentUser = gql`
   }
 `;
 
-export const VoteCreateQuery = gql `
+export const VoteCreateQuery = gql`
   mutation voteCreate($consultationResponseVote: VoteCreateInput!) {
     voteCreate(consultationResponseVote: $consultationResponseVote) {
       id
@@ -239,13 +239,13 @@ export const VoteCreateQuery = gql `
   }
 `
 
-export const VoteDeleteQuery = gql `
+export const VoteDeleteQuery = gql`
   mutation voteDelete($consultationResponseId : Int!) {
     voteDelete(consultationResponseId : $consultationResponseId )
   }
 `;
 
-export const CreateUserProfanityCountRecord=gql`
+export const CreateUserProfanityCountRecord = gql`
   mutation userProfanityCountCreate($userProfanityCount:UserProfanityCountInput!){
     userProfanityCountCreate(userProfanityCount: $userProfanityCount){
       userId
@@ -254,7 +254,7 @@ export const CreateUserProfanityCountRecord=gql`
   }
 `;
 
-export const UpdateUserProfanityCountRecord=gql`
+export const UpdateUserProfanityCountRecord = gql`
   mutation userProfanityCountUpdate($userProfanityCount:UserProfanityCountInput!){
     userProfanityCountUpdate(userProfanityCount: $userProfanityCount){
       userId
@@ -263,7 +263,7 @@ export const UpdateUserProfanityCountRecord=gql`
   }
 `;
 
-export const UserProfanityCountUser=gql`
+export const UserProfanityCountUser = gql`
   query userProfanityCountUser($userId: Int!){
     userProfanityCountUser(userId: $userId){
       userId
