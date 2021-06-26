@@ -80,4 +80,4 @@
 </app-confirm-email-modal>
 
 <app-auth-modal *ngIf="authModal" [consultationId]="consultationId" (close)="authModal = false"></app-auth-modal>
-<app-confirmation-modal *ngIf="isConfirmModal" [message]='confirmMessage' [showCancel]=false (close)='confirmed($event)'></app-confirmation-modal>
+<app-profane-modal *ngIf="isConfirmModal" [message]='confirmMessage' [showCancel]=false (close)='confirmed($event)'></app-profane-modal>

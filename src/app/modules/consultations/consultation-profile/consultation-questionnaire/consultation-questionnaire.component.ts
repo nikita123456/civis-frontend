@@ -42,7 +42,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   isConfirmModal = false;
   confirmMessage = {
     msg: 'Do you want to reconsider your response? We detected some potentially harmful language, and to keep Civis safe and open we recommend revising responses that were detected as potentially harmful.',
-    title: 'Profane'
+    title: ''
   };
   nudgeMessageDisplayed= false;
   userResponse='';

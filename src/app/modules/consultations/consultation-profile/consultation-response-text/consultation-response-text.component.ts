@@ -398,7 +398,6 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
     if (this.responseSubmitLoading) {
       return;
     }
-    debugger;
     if (this.responseText && this.responseFeedback) {
       const consultationResponse = this.getConsultationResponse();
       if (!isObjectEmpty(consultationResponse)) {
