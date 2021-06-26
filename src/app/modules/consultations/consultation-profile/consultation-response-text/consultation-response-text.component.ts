@@ -45,7 +45,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
   isConfirmModal = false;
   confirmMessage = {
     msg: 'Do you want to reconsider your response? We detected some potentially harmful language, and to keep Civis safe and open we recommend revising responses that were detected as potentially harmful.',
-    title: 'Profane'
+    title: ''
   };
   nudgeMessageDisplayed = false;
   profaneCount: any;
@@ -399,6 +399,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
     if (this.responseSubmitLoading) {
       return;
     }
+    debugger;
     if (this.responseText && this.responseFeedback) {
       const consultationResponse = this.getConsultationResponse();
       if (!isObjectEmpty(consultationResponse)) {
