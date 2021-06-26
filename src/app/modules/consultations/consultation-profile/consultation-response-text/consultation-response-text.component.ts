@@ -306,7 +306,6 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
           });
         } else {
           this.authModal = true;            
-          localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
         }
       }
     } else {
@@ -407,7 +406,6 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
           this.showError = false;
         } else {
           this.authModal = true;
-          localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
         }
       }
     } else {

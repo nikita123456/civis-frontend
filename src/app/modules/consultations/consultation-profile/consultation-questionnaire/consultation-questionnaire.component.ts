@@ -219,7 +219,6 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
           });
         } else {
           this.authModal = true;
-          localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
         }
       }  
     } else {
@@ -321,7 +320,6 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
           this.showError = false;
         } else {
           this.authModal = true;
-          localStorage.setItem('consultationResponse', JSON.stringify(consultationResponse));
         }
       }
     } else {
