@@ -120,6 +120,7 @@ export class ConsultationResponseTextComponent
       consultationId: this.consultationId,
       visibility: this.responseVisibility ? 'shared' : 'anonymous',
       responseText: this.responseText,
+      isApproved: +1,
       satisfactionRating: this.responseFeedback,
     };
     if (checkPropertiesPresence(consultationResponse)) {
