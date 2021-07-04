@@ -332,6 +332,7 @@ export const SubmitResponseQuery = gql`
               }
               downVoteCount
               responseText
+              isApproved
               isVerified
               roundNumber
               templatesCount

@@ -52,6 +52,8 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
   userData:any;
   profanity_count_changed: boolean=false;
   isUserResponseProfane: boolean=false;
+  isApproved = 0;
+
   constructor(
     private userService: UserService,
     private consultationService: ConsultationsService,
@@ -106,6 +108,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
       consultationId: this.consultationId,
       visibility: this.responseVisibility ? 'shared' : 'anonymous',
       responseText: this.responseText,
+      isApproved: this.isApproved,
       satisfactionRating: this.responseFeedback,
     };
     if (checkPropertiesPresence(consultationResponse)) {
@@ -337,6 +340,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
           return;
         }
         this.profaneCount+=1;
+        this.isApproved=+1;
       }
       this.apollo.mutate({
         mutation: CreateUserProfanityCountRecord,
@@ -363,6 +367,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
         return;
       }
       this.profaneCount+=1;
+      this.isApproved=+1;
       if(this.profaneCount>=3){
         this.confirmMessage.msg = 'We detected that your response may contain harmful language. This response will be moderated and sent to the Government at our moderator\'s discretion.'
         this.isConfirmModal = true;
