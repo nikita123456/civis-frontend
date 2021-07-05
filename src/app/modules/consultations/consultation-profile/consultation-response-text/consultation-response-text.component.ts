@@ -5,7 +5,7 @@ import { filter, map } from 'rxjs/operators';
 import { isObjectEmpty, checkPropertiesPresence, scrollToFirstError } from 'src/app/shared/functions/modular.functions';
 import { Router } from '@angular/router';
 import { Apollo } from 'apollo-angular';
-import { ConsultationProfileCurrentUser, SubmitResponseQuery, CreateUserProfanityCountRecord, UpdateUserProfanityCountRecord,UserProfanityCountUser } from '../consultation-profile.graphql';
+import { ConsultationProfileCurrentUser, SubmitResponseQuery, CreateUserCountRecord, UpdateUserCountRecord,UserCountUser } from '../consultation-profile.graphql';
 import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
 
 @Component({
@@ -48,7 +48,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
     title: ''
   };
   nudgeMessageDisplayed = false;
-  profaneCount: any;
+  profanityCount: any;
   userData:any;
   profanity_count_changed: boolean=false;
   isUserResponseProfane: boolean=false;
@@ -87,7 +87,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
     this.consultationService.submitResponseText
     .subscribe((status) => {
       if (status) {
-        this.submitAnswerWithProfanityCheck();
+        this.submitAnswerWithChecks();
       }
     });
   }
@@ -278,7 +278,7 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
     return true;
   }
 
-  submitAnswerWithProfanityCheck(){
+  submitAnswerWithChecks(){
     if (this.responseSubmitLoading ) {
       return;
     }
@@ -287,13 +287,13 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
       if (!isObjectEmpty(consultationResponse)) {
         if (this.currentUser) {
           this.apollo.watchQuery({
-            query: UserProfanityCountUser,
+            query: UserCountUser,
             variables: {userId:this.currentUser.id},
             fetchPolicy:'no-cache'
           })
           .valueChanges
           .pipe (
-            map((res: any) => res.data.userProfanityCountUser)
+            map((res: any) => res.data.userCountUser)
           )
           .subscribe(data => {
             if(!this.profanity_count_changed){
@@ -326,34 +326,35 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
     this.isUserResponseProfane=filter.isProfane(this.responseText);
 
     if (this.userData!==null){
-      this.profaneCount=this.userData.profanityCount;
+      this.profanityCount=this.userData.profanityCount;
     }
     else{
-      this.profaneCount=0;
+      this.profanityCount=0;
       if(this.isUserResponseProfane){
         if (!this.nudgeMessageDisplayed) {
           this.isConfirmModal = true;
           this.nudgeMessageDisplayed=true;
           return;
         }
-        this.profaneCount+=1;
+        this.profanityCount+=1;
       }
       this.apollo.mutate({
-        mutation: CreateUserProfanityCountRecord,
+        mutation: CreateUserCountRecord,
         variables:{
-          userProfanityCount:{
-          userId: this.currentUser.id,
-          profanityCount:this.profaneCount
+          userCount:{
+            userId: this.currentUser.id,
+            profanityCount: this.profanityCount,
+            shortResponseCount: 0
           }
-         },
-       })
-        .subscribe((data) => {
+        },
+      })
+      .subscribe((data) => {
          this.submitAnswer();
-       }, err => {
-       this.errorService.showErrorModal(err);
-       });
-       this.profanity_count_changed=true;
-       return;
+      }, err => {
+        this.errorService.showErrorModal(err);
+      });
+      this.profanity_count_changed=true;
+      return;
     }
 
     if(this.isUserResponseProfane){
@@ -362,8 +363,8 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
         this.nudgeMessageDisplayed=true;
         return;
       }
-      this.profaneCount+=1;
-      if(this.profaneCount>=3){
+      this.profanityCount+=1;
+      if(this.profanityCount>=3){
         this.confirmMessage.msg = 'We detected that your response may contain harmful language. This response will be moderated and sent to the Government at our moderator\'s discretion.'
         this.isConfirmModal = true;
       }
@@ -374,20 +375,21 @@ export class ConsultationResponseTextComponent implements OnInit, AfterViewCheck
     }
     
     this.apollo.mutate({
-      mutation: UpdateUserProfanityCountRecord,
+      mutation: UpdateUserCountRecord,
       variables:{
-        userProfanityCount:{
-        userId: this.currentUser.id,
-        profanityCount:this.profaneCount
+        userCount:{
+          userId: this.currentUser.id,
+          profanityCount: this.profanityCount,
+          shortResponseCount: this.userData.shortResponseCount
         }
        },
-     })
-     .subscribe((data) => {
-       this.submitAnswer();
-     }, err => {
-     this.errorService.showErrorModal(err);
-     });
-     this.profanity_count_changed=true;
+    })
+    .subscribe((data) => {
+      this.submitAnswer();
+    }, err => {
+      this.errorService.showErrorModal(err);
+    });
+    this.profanity_count_changed=true;
   }
 
   confirmed(event) {

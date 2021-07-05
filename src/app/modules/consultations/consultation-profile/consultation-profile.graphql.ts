@@ -245,29 +245,32 @@ export const VoteDeleteQuery = gql`
   }
 `;
 
-export const CreateUserProfanityCountRecord = gql`
-  mutation userProfanityCountCreate($userProfanityCount:UserProfanityCountInput!){
-    userProfanityCountCreate(userProfanityCount: $userProfanityCount){
+export const CreateUserCountRecord = gql`
+  mutation userCountCreate($userCount:UserCountInput!){
+    userCountCreate(userCount: $userCount){
       userId
       profanityCount
+      shortResponseCount
     }
   }
 `;
 
-export const UpdateUserProfanityCountRecord = gql`
-  mutation userProfanityCountUpdate($userProfanityCount:UserProfanityCountInput!){
-    userProfanityCountUpdate(userProfanityCount: $userProfanityCount){
+export const UpdateUserCountRecord = gql`
+  mutation userCountUpdate($userCount:UserCountInput!){
+    userCountUpdate(userCount: $userCount){
       userId
       profanityCount
+      shortResponseCount
     }
   }
 `;
 
-export const UserProfanityCountUser = gql`
-  query userProfanityCountUser($userId: Int!){
-    userProfanityCountUser(userId: $userId){
+export const UserCountUser = gql`
+  query userCountUser($userId: Int!){
+    userCountUser(userId: $userId){
       userId
       profanityCount
+      shortResponseCount
     }
   }
 `;

@@ -5,7 +5,7 @@ import { ConsultationsService } from 'src/app/shared/services/consultations.serv
 import { isObjectEmpty, checkPropertiesPresence, scrollToFirstError } from '../../../../shared/functions/modular.functions';
 import { atLeastOneCheckboxCheckedValidator } from 'src/app/shared/validators/checkbox-validator';
 import { Apollo } from 'apollo-angular';
-import { SubmitResponseQuery, ConsultationProfileCurrentUser, CreateUserProfanityCountRecord,UpdateUserProfanityCountRecord, UserProfanityCountUser } from '../consultation-profile.graphql';
+import { SubmitResponseQuery, ConsultationProfileCurrentUser, CreateUserCountRecord,UpdateUserCountRecord, UserCountUser } from '../consultation-profile.graphql';
 import { filter, map } from 'rxjs/operators';
 import { ErrorService } from 'src/app/shared/components/error-modal/error.service';
 
@@ -46,7 +46,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   };
   nudgeMessageDisplayed= false;
   userResponse='';
-  profaneCount: any;
+  profanityCount: any;
   userData:any;
   profanity_count_changed: boolean=false;
   isUserResponseProfane: boolean=false;
@@ -190,7 +190,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     return true;
   }
 
-  submitAnswerWithProfanityCheck(){
+  submitAnswerWithChecks(){
     if (this.responseSubmitLoading ) {
       return;
     }
@@ -200,13 +200,13 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
       if (!isObjectEmpty(consultationResponse)) {
         if (this.currentUser) {
           this.apollo.watchQuery({
-            query: UserProfanityCountUser,
+            query: UserCountUser,
             variables: {userId:this.currentUser.id},
             fetchPolicy:'no-cache'
           })
           .valueChanges
           .pipe (
-            map((res: any) => res.data.userProfanityCountUser)
+            map((res: any) => res.data.userCountUser)
           )
           .subscribe(data => {
             if(!this.profanity_count_changed){
@@ -237,71 +237,73 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     filter.addWords('baap ke lavde','chodu','chodoo','choodu','gandu','gaandu','gandoo','bhosad','bhosada','bhosadaa','bhosadaaa','bhosadii','bhosadika','bhosadike','bhosadiki','bosadike','bakrichod','balatkaar','behen ke laude','betichod','bhai chhod','bhayee chod','bhen chhod','bhaynchod','behanchod','behenchod','bhen ke lode','bhosdi','bhosdike','chipkai ki choot ke paseene','cha cha chod','chod ke bal ka kida','chopre he randi','chudasi','chut ka maindak','chutia','chutiya','chootia','chutiye','dheeli choot','choot','chootiya','gaand chaat mera','gaand','gaand ka khadda','gaand ke dhakan','gaand mein kida','gandi chut mein sadta hua ganda kida','gandmasti','jhaat ke baal','jhat lahergaya','jhatoo','jhantu','kukarchod','kutha sala','kuthta buraanahe kandaa nahi pattaahe','lode jesi shakal ke','lode ke baal','lund khajoor','lund chuse','lund','luhnd','lundh','madar chod','maadarchod','maadar','madar','chod','madarchod','madarchod ke aulaad','mader chod','mai chod','mera mume le','mere fudi kha ley','meri ghand ka baal','randi','randi ka choda','suzit','sust lund ki padaish','tatti ander lele','tere baap ki gaand','teri chute mai chuglee','teri gaand mein haathi ka lund','teri maa ki choot','teri maa ki sukhi bhos','teri phuphi ki choot mein','teri bhosri mein aag','teri gaand me danda','teri ma ki choot me bara sa land','teri ma ki chudaye bandar se hui','teri ma randi','teri maa ke bable','teri maa ke bhosade ke baal','tu tera maa ka lauda','amma ki chut','bhaand me jaao','bhadva','bhadve','chodika','bhadwe ki nasal','bhen ke lode maa chuda','bhosad chod','bhosadchod','bhosadi ke','bhosdee kay','bhosdi k','bulle ke baal','bursungha','camina','chod bhangra','choot k bhoot','choot k pakode','choot ka paani','choot ka pissu','choot ki jhilli','chudpagal','chut ke makkhan','chootiye','gaand maar bhen chod','gand mein louda','gandi fuddi ki gandi auladd','haram zaadaa','harami','jhaat','kaala lund','kaali kutti','kuthri','kutte','kutte ki olad','lavde ka baal','lavde','lodu','lowde ka bal','lund k laddu','lund mera muh tera','maa-cho','maal chhodna','mahder chod','mera gota moo may lay','mome ka pasina chat','moo may lay mera','padosi ki aulaad','rand ki moot','randi baj','randi ka larka','randi ke bacche','randi ke beej','saale lm','sab ka lund teri ma ki chut mein','sinak se paida hua','suvar chod','suwar ki aulad','tera gittha','tere maa ka bur','teri behen ka bhosda faadu','teri gand mai ghadhe ka lund','teri ma bahar chud rahi he','teri ma ko kutta chode','teri maa ka bhosra','teri maa ka boba chusu','teri maa ki choot me kutte ka lavda','teri maa ki chut','teri maa ki chute','tuzya aaichi kanda puchi','bhadavya','bhikaar','bulli','chinaal','chut','gand','maadarbhagat','chodubhagat','lundfakir','gandit','jhavadya','laudu','lavadya','muttha','raandichya','madarchoth');
 
     this.isUserResponseProfane=filter.isProfane(this.userResponse);
-
+    
     if (this.userData!==null){
-      this.profaneCount=this.userData.profanityCount;
+      this.profanityCount=this.userData.profanityCount;
     }
     else{
-      this.profaneCount=0;
+      this.profanityCount=0;
       if(this.isUserResponseProfane){
         if (!this.nudgeMessageDisplayed) {
           this.isConfirmModal = true;
           this.nudgeMessageDisplayed=true;
           return;
         }
-        this.profaneCount+=1;
+        this.profanityCount+=1;
       }
       this.apollo.mutate({
-        mutation: CreateUserProfanityCountRecord,
+        mutation: CreateUserCountRecord,
         variables:{
-          userProfanityCount:{
-          userId: this.currentUser.id,
-          profanityCount:this.profaneCount
+          userCount:{
+            userId: this.currentUser.id,
+            profanityCount: this.profanityCount,
+            shortResponseCount: 0
           }
          },
        })
       .subscribe((data) => {
         this.submitAnswer();
       }, err => {
-      this.errorService.showErrorModal(err);
+        this.errorService.showErrorModal(err);
       });
       this.profanity_count_changed=true;
     return;
-  }
+    }
 
-  if(this.isUserResponseProfane){
-    if (!this.nudgeMessageDisplayed) {
-      this.isConfirmModal = true;
-      this.nudgeMessageDisplayed=true;
+    if(this.isUserResponseProfane){
+      if (!this.nudgeMessageDisplayed) {
+        this.isConfirmModal = true;
+        this.nudgeMessageDisplayed=true;
+        return;
+      }
+      this.profanityCount+=1;
+      if(this.profanityCount>=3){
+        this.confirmMessage.msg = 'We detected that your response may contain harmful language. This response will be moderated and sent to the Government at our moderator\'s discretion.'
+        this.isConfirmModal = true;
+      }
+    }
+    else{
+      this.submitAnswer();
       return;
     }
-    this.profaneCount+=1;
-    if(this.profaneCount>=3){
-      this.confirmMessage.msg = 'We detected that your response may contain harmful language. This response will be moderated and sent to the Government at our moderator\'s discretion.'
-      this.isConfirmModal = true;
-    }
-  }
-  else{
-    this.submitAnswer();
-    return;
-  }
     
-  this.apollo.mutate({
-    mutation: UpdateUserProfanityCountRecord,
-      variables:{
-        userProfanityCount:{
-        userId: this.currentUser.id,
-        profanityCount:this.profaneCount
-      }
-    },
-  })
-  .subscribe((data) => {   
-    this.submitAnswer();
-  }, err => {
-    this.errorService.showErrorModal(err);
-  });
-  this.profanity_count_changed=true;
-}
+    this.apollo.mutate({
+      mutation: UpdateUserCountRecord,
+        variables:{
+          userCount:{
+          userId: this.currentUser.id,
+          profanityCount:this.profanityCount,
+          shortResponseCount: this.userData.shortResponseCount
+        }
+      },
+    })
+    .subscribe((data) => {   
+      this.submitAnswer();
+    }, err => {
+      this.errorService.showErrorModal(err);
+    });
+    this.profanity_count_changed=true;
+  }
 
   confirmed(event) {
     this.isConfirmModal = false;
@@ -398,7 +400,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   validateAnswers() {
     this.consultationService.validateAnswers.subscribe((value) => {
       if (value) {
-        this.submitAnswerWithProfanityCheck();
+        this.submitAnswerWithChecks();
         this.consultationService.validateAnswers.next(false);
       }
     });
