@@ -192,8 +192,8 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     return true;
   }
 
-  submitAnswerWithChecks(){
-    if (this.responseSubmitLoading ) {
+  submitAnswer() {
+    if (this.responseSubmitLoading) {
       return;
     }
     if (this.questionnaireForm.valid && this.responseFeedback) {
@@ -222,7 +222,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
         } else {
           this.authModal = true;
         }
-      }  
+      }
     } else {
       if (!this.responseFeedback) {
         this.consultationService.satisfactionRatingError.next(true);
@@ -265,7 +265,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
          },
        })
       .subscribe((data) => {
-        this.submitAnswer();
+        this.invokeSubmitResponse();
       }, err => {
         this.errorService.showErrorModal(err);
       });
@@ -287,7 +287,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
       }
     }
     else{
-      this.submitAnswer();
+      this.invokeSubmitResponse();
       return;
     }
     
@@ -302,7 +302,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
       },
     })
     .subscribe((data) => {   
-      this.submitAnswer();
+      this.invokeSubmitResponse();
     }, err => {
       this.errorService.showErrorModal(err);
     });
@@ -313,28 +313,10 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
     this.isConfirmModal = false;
   }
 
-  submitAnswer() {
-    if (this.responseSubmitLoading) {
-      return;
-    }
-    if (this.questionnaireForm.valid && this.responseFeedback) {
-      this.responseAnswers = this.getResponseAnswers();
-      const consultationResponse = this.getConsultationResponse();
-      if (!isObjectEmpty(consultationResponse)) {
-        if (this.currentUser) {
-          this.submitResponse(consultationResponse);
-          this.showError = false;
-        } else {
-          this.authModal = true;
-        }
-      }
-    } else {
-      if (!this.responseFeedback) {
-        this.consultationService.satisfactionRatingError.next(true);
-      }
-      this.showError = true;
-      this.scrollToError = true;
-    }
+  invokeSubmitResponse(){
+    const consultationResponse = this.getConsultationResponse();
+    this.submitResponse(consultationResponse);
+    this.showError = false;
   }
 
   getResponseAnswers () {
@@ -404,7 +386,7 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
   validateAnswers() {
     this.consultationService.validateAnswers.subscribe((value) => {
       if (value) {
-        this.submitAnswerWithChecks();
+        this.submitAnswer();
         this.consultationService.validateAnswers.next(false);
       }
     });

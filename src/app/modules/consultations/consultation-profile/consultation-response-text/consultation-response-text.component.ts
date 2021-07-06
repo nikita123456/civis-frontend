@@ -106,7 +106,7 @@ export class ConsultationResponseTextComponent
   createResponse() {
     this.consultationService.submitResponseText.subscribe((status) => {
       if (status) {
-        this.submitAnswerWithChecks();
+        this.submitAnswer();
       }
     });
   }
@@ -314,9 +314,28 @@ export class ConsultationResponseTextComponent
     }
     return true;
   }
+  
+  urlToText(text: string): string {
+    if (text) {
+      const str: any =  text.replace(/<\/?[^>]+(>|$)/g, '');
+      return str.replaceAll('&nbsp;', '').trim();
+    } else {
+      return '';
+    }
+  }
 
-  submitAnswerWithChecks(){
-    if (this.responseSubmitLoading ) {
+  submitAnswer() {
+    if (this.responseSubmitLoading) {
+      return;
+    }
+    let responseTextString: any = this.sanitizer.bypassSecurityTrustHtml(
+      this.responseText
+    );
+    responseTextString =
+      responseTextString.changingThisBreaksApplicationSecurity;
+    if (this.urlToText(responseTextString).length <= 0) {
+      this.responseText = null;
+      this.showError = true;
       return;
     }
     if (this.responseText && this.responseFeedback) {
@@ -342,7 +361,11 @@ export class ConsultationResponseTextComponent
             this.errorService.showErrorModal(err);
           });
         } else {
-          this.authModal = true;            
+          this.authModal = true;
+          // localStorage.setItem(
+          //   'consultationResponse',
+          //   JSON.stringify(consultationResponse)
+          // ); //TODO
         }
       }
     } else {
@@ -352,9 +375,7 @@ export class ConsultationResponseTextComponent
       this.showError = true;
       this.scrollToError = true;
     }
-    
   }
-
   updateProfanityCount(){
     var Filter = require('bad-words'),
     filter = new Filter();
@@ -387,7 +408,7 @@ export class ConsultationResponseTextComponent
         },
       })
       .subscribe((data) => {
-         this.submitAnswer();
+         this.invokeSubmitResponse();
       }, err => {
         this.errorService.showErrorModal(err);
       });
@@ -409,7 +430,7 @@ export class ConsultationResponseTextComponent
       }
     }
     else{
-      this.submitAnswer();
+      this.invokeSubmitResponse();
       return;
     }
     
@@ -424,7 +445,7 @@ export class ConsultationResponseTextComponent
        },
     })
     .subscribe((data) => {
-      this.submitAnswer();
+      this.invokeSubmitResponse();
     }, err => {
       this.errorService.showErrorModal(err);
     });
@@ -434,51 +455,11 @@ export class ConsultationResponseTextComponent
   confirmed(event) {
     this.isConfirmModal = false;
   }
-  
-  urlToText(text: string): string {
-    if (text) {
-      const str: any =  text.replace(/<\/?[^>]+(>|$)/g, '');
-      return str.replaceAll('&nbsp;', '').trim();
-    } else {
-      return '';
-    }
-  }
 
-  submitAnswer() {
-    if (this.responseSubmitLoading) {
-      return;
-    }
-    let responseTextString: any = this.sanitizer.bypassSecurityTrustHtml(
-      this.responseText
-    );
-    responseTextString =
-      responseTextString.changingThisBreaksApplicationSecurity;
-    if (this.urlToText(responseTextString).length <= 0) {
-      this.responseText = null;
-      this.showError = true;
-      return;
-    }
-    if (this.responseText && this.responseFeedback) {
-      const consultationResponse = this.getConsultationResponse();
-      if (!isObjectEmpty(consultationResponse)) {
-        if (this.currentUser) {
-          this.submitResponse(consultationResponse);
-          this.showError = false;
-        } else {
-          this.authModal = true;
-          localStorage.setItem(
-            'consultationResponse',
-            JSON.stringify(consultationResponse)
-          );
-        }
-      }
-    } else {
-      if (!this.responseFeedback) {
-        this.consultationService.satisfactionRatingError.next(true);
-      }
-      this.showError = true;
-      this.scrollToError = true;
-    }
+  invokeSubmitResponse(){
+    const consultationResponse = this.getConsultationResponse();
+    this.submitResponse(consultationResponse);
+    this.showError = false;
   }
 
   submitResponse(consultationResponse) {
