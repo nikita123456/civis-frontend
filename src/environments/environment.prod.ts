@@ -5,7 +5,7 @@ export const environment = {
   development: false,
   staging: false,
   production: true,
-  api: 'https://civis-api-jpmc-backend.staging-9143.c66.me',
+  api: 'https://api.civis.vote',
   RECAPTCHA_SITE_KEY: '6Ld8GLUUAAAAAH5CZbqDdQDwl-s5ZC2ZqHz5TWyj'
 };
 
