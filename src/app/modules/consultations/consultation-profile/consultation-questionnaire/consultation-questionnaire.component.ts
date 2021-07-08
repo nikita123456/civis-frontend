@@ -221,6 +221,10 @@ export class ConsultationQuestionnaireComponent implements OnInit, AfterViewInit
           });
         } else {
           this.authModal = true;
+          // localStorage.setItem(
+          //   'consultationResponse',
+          //   JSON.stringify(consultationResponse)
+          // ); //TODO
         }
       }
     } else {

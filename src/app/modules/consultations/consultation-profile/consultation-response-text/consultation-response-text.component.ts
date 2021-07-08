@@ -107,6 +107,12 @@ export class ConsultationResponseTextComponent
     this.consultationService.submitResponseText.subscribe((status) => {
       if (status) {
         this.submitAnswer();
+        if (this.responseIndex) {
+          window.scrollTo({
+            top: this.responseIndex.nativeElement.offsetTop - 80,
+            behavior: 'smooth',
+          });
+        }
       }
     });
   }
